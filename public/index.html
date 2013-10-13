@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link type='text/css' rel='stylesheet' href='style.css'/>
+    <title>Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="js/jquery.nicescroll.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <script src="js/spin.js"></script>
+        <script>
+        $(function() {
+          var availableTags = [
+            "Alternative",
+            "Dance",
+            "Electronic",
+            "Rap/Hip Hop",
+            "Pop",
+            "Jazz",
+            "Reggae",
+            "Folk",
+            "Rock",
+            "Noise",
+            "Trap",
+            "Groovy",
+            "Funk",
+            "Nu Disco",
+            "House",
+            "Future Garage",
+            "Experimental"
+          ];
+          $( "#g_complete" ).autocomplete({
+            source: availableTags
+          });
+          $( "#genre" ).autocomplete({
+            source: availableTags
+          });
+        });
+      </script>
+  </head>
+  <body>
+  <div id='mediacontainer'></div>
+  <div class='container'>
+    <header class="codrops-header">
+    <div id="wrapper">
+      <div id='title' class='col'>fresh melodies</div>
+      <br/>
+      <div id="songsContainer" class="col"></div>
+      <div id="loading-spinner"/>
+    </div>​
+    </header>
+    <nav id="bt-menu" class="bt-menu">
+      <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
+      <div class="bt-form">
+        <div class="bt-field">
+          <label for="g_complete">genre </label>
+          <input id="g_complete" />
+        </div>
+        <div class="bt-button">
+          <button id="filter_button" class="btn btn-6 btn-6a" type="button">filter</button>
+        </div>
+        <div class="bt-text">
+          <h2 id="sub_text">submit new song</h2>
+        </div>
+        <div class="bt-field">
+          <label for="name">name </label>
+          <input id="name" class="sub_form"/>
+        </div>
+        <div class="bt-field">
+          <label for="artist">artist </label>
+          <input id="artist" class="sub_form"/>
+        </div>
+        <div class="bt-field">
+          <label for="genre">genre </label>
+          <input id="genre" class="sub_form"/>
+        </div>
+        <div class="bt-field">
+          <label for="url">url </label>
+          <input id="url" class="sub_form"/>
+        </div>
+          <div class="bt-button">
+        <button id="submit_button" class="btn btn-6 btn-6a" type="button">submit</button>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var jq = {};
+      jq.doc = $(document);
+      jq.songsContainer = $('#songsContainer');
+    </script>
+    <script src="js/youtubeapi.js"></script>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script src="js/comm.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/borderMenu.js"></script>
+  </body>
+</html>
+
