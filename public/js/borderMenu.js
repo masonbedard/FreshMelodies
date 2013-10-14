@@ -11,6 +11,7 @@
 $(document).ready(
     function() {
         $("#bt-menu .bt-form").niceScroll({scrollspeed:200, bouncescroll:true, horizrailenabled:false});
+        $("#bt-menu .bt-form").getNiceScroll().resize();
         $("#bt-menu .bt-form").getNiceScroll().hide;
         var opts = {
           lines: 13, // The number of lines to draw

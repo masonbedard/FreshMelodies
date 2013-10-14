@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var songSchema = new Schema({
+  _id: Schema.ObjectId,
   name: String,
   artist: String,
   genre: String,
@@ -33,8 +34,8 @@ songSchema.statics.findAllAfterNum = function(num, cb) {
       .exec(cb);
 }
 
-songSchema.statics.addListen = function(name, artist) {
-  this.find({name:name, artist:artist}, function(err, results) {
+songSchema.statics.addListen = function(_id) {
+  this.find({_id:_id}, function(err, results) {
 
     if (err) {
       console.log('couldnt add point')

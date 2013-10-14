@@ -4,9 +4,10 @@ var more_songs = true;
 
 var comm = {};
 comm.count = 0;
+comm.playing_id  = undefined;
 comm.entries = {};
 comm.socket = io.connect(window.location.href);
-comm.socket.emit('populate songs',{'genre':'all'});
+comm.socket.emit('load songs',{'genre':'all', 'num':0});
 $("#loading-spinner").addClass("loading-spinner-visible");
 
 comm.socket.on('no more songs', function() {
@@ -33,36 +34,30 @@ comm.youtubeLinkParser = function(url) {
   }
 }
 
-comm.url_to_id = function(url) {
-  var slash = "/";
-  var re = new RegExp(slash, "g");
-  return url.replace(re, "_bedardterefinko_");
-};
-
 comm.createEntries = function(data) {
   var text = '';
   for (var i=0;i<data.length;i++) {
-    if (!comm.entries[data[i].url]) {
-      var url_no_slashes = comm.url_to_id(data[i].url);
+    if (!comm.entries[data[i]._id]) {
       var knownsite = comm.parseurl(data[i].url);
-      text += "<div class='entry'><span class='field'>\"" +
-        data[i].name+"\"</span>";
+      text += "<div class='entry' id='" + data[i]._id + "'>" +
+               "<span class='field'>\"" + data[i].name + "\"</span>";
 
-      text += "<div class='controlcontainer'><i class='icon-play control play' id='"+
-        url_no_slashes+"'></i><i class='icon-pause control pause' id='"+
-        url_no_slashes+"'></i><i class='icon-step-backward control rewind' id='"+
-        url_no_slashes+"'></i></div><br>";
+      text += "<div class='controlcontainer'>" +
+                "<i class='icon-play control play'></i>" +
+                "<i class='icon-step-backward control rewind'></i>" +
+              "</div>" +
+              "<br>";
 
-      text += "<span class='field'>"+
-        data[i].artist+"</span><br><span class='field'>" +
-        data[i].genre+"</span></div><br>";
+      text += "<span class='field'>" + data[i].artist + "</span><br>" +
+              "<span class='field'>" + data[i].genre +  "</span></div><br>";
 
       if (knownsite === 1) {
-        $('#mediacontainer').append("<div class='mediaplayer' id='yt"+url_no_slashes+"'></div>");
+        $('#mediacontainer').append("<div class='mediaplayer' id='yt" + data[i]._id + "'></div>");
       }
       else if (knownsite === 2) {
-        $('#mediacontainer').append("<div class='mediaplayer' id='scd"+url_no_slashes+"'></div>");
+        $('#mediacontainer').append("<div class='mediaplayer' id='scd" + data[i]._id + "'></div>");
       }
+
       var entry = {};
       entry.name = data[i].name;
       entry.artist = data[i].artist;
@@ -70,7 +65,7 @@ comm.createEntries = function(data) {
       entry.url = data[i].url;
       entry.playing = false;
       entry.mediastarted = false;
-      comm.entries[url_no_slashes] = entry;
+      comm.entries[data[i]._id] = entry;
     }
   }
   jq.songsContainer.append(text);
@@ -78,10 +73,6 @@ comm.createEntries = function(data) {
   loading = false;
   $("#loading-spinner").removeClass("loading-spinner-visible");
 };
-
-comm.socket.on('songs response', function(data) {
-  comm.createEntries(data);
-});
 
 comm.socket.on('more songs', function(data) {
   comm.createEntries(data);
@@ -95,10 +86,10 @@ comm.setupYT = function(url, id) {
       width: 200,
       videoId: videoId,
       events: {
-        'onReady': onPlayerReady  
+        'onReady': onPlayerReady
       }
     });
-  } 
+  }
 };
 
 comm.setupSC = function(url, id) {
@@ -112,10 +103,52 @@ comm.setupSC = function(url, id) {
   comm.entries[id].player = SC.Widget(playerId);
 }
 
-jq.doc.on('click', '.pause', function() {
-  var id = $(this).attr('id');
+comm.playSong = function(id) {
+  var entry = comm.entries[id];
+  if (comm.playing_id != undefined) { // song playing, stop it
+    comm.pauseSong(comm.playing_id);
+  }
+  if (!entry.mediastarted) {
+
+    var url = entry.url;
+
+    if (entry.knownsite === 1) {
+      comm.setupYT(url, id);
+    }
+    else if (entry.knownsite === 2) {
+      comm.setupSC(url, id);
+    }
+    else {
+      console.log('not set up yet');
+    }
+    comm.entries[id].mediastarted = true;
+    if (localStorage.getItem(id) == undefined) {
+      localStorage.setItem(id, true);
+      comm.socket.emit('add listen',{'_id':id});
+    }
+  }
+  else {
+    if (entry.knownsite === 1) {
+      comm.entries[id].player.playVideo();
+    }
+    else if (entry.knownsite === 2) {
+      comm.entries[id].player.play();
+    }
+    else {
+      console.log("being set up");
+    }
+  }
+  comm.playing_id = id;
+  $("#" + id + " .play").removeClass("icon-play").removeClass("play")
+         .addClass("icon-pause").addClass("pause");
+  comm.entries[id].playing = true;
+}
+
+comm.pauseSong = function(id) {
   var entry = comm.entries[id];
   if (entry.mediastarted && entry.playing) {
+    $("#" + id + " .pause").removeClass("icon-pause").removeClass("pause")
+           .addClass("icon-play").addClass("play");
     if (entry.knownsite === 1) {
       comm.entries[id].player.pauseVideo();
       comm.entries[id].playing = false;
@@ -127,11 +160,11 @@ jq.doc.on('click', '.pause', function() {
     else {
       console.log("still being set up");
     }
+    comm.playing_id = undefined;
   }
-});
+}
 
-jq.doc.on('click', '.rewind', function() {
-  var id = $(this).attr('id');
+comm.rewindSong = function(id) {
   var entry = comm.entries[id];
   if (entry.mediastarted) {
     if (entry.knownsite === 1) {
@@ -144,37 +177,21 @@ jq.doc.on('click', '.rewind', function() {
       console.log("still being set up");
     }
   }
+}
+
+jq.doc.on('click', '.pause', function() {
+  var id = $(this).parent().parent().attr('id');
+  comm.pauseSong(id);
+});
+
+jq.doc.on('click', '.rewind', function() {
+  var id = $(this).parent().parent().attr('id');
+  comm.rewindSong(id);
 });
 
 jq.doc.on('click', '.play', function() {
-  var id = $(this).attr('id');
-  var entry = comm.entries[id];
-  if (!entry.mediastarted) {
-    var url = entry.url;
-    if (entry.knownsite === 1) {
-      comm.setupYT(url, id);
-    }
-    else if (entry.knownsite === 2) {
-      comm.setupSC(url, id);
-    }
-    else {
-      console.log('not set up yet');
-    }
-    comm.socket.emit('add listen',{'name':entry.name,'artist':entry.artist});
-    comm.entries[id].mediastarted = true;
-  }
-  else {
-    if (entry.knownsite === 1) {
-      comm.entries[id].player.playVideo();
-    }
-    else if (entry.knownsite === 2) {
-      comm.entries[id].player.play();
-    }
-    else { 
-      console.log("being set up");
-    }
-  }
-  comm.entries[id].playing = true;
+  var id = $(this).parent().parent().attr('id');
+  comm.playSong(id);
 });
 
 $(window).scroll(function() {
@@ -188,7 +205,7 @@ $(window).scroll(function() {
       }, 1000);
       console.log("here");
       $("#loading-spinner").addClass("loading-spinner-visible");
-      comm.socket.emit('load more songs',{'genre':genre, num:comm.count});
+      comm.socket.emit('load songs',{'genre':genre, num:comm.count});
     }
 }
 });
@@ -214,16 +231,15 @@ $("#submit_button").bind('click', function() {
   var song = {};
   song.name = $("#name").val();
   song.artist = $("#artist").val();
-  //song.album = $("#album").val();
   song.url = $("#url").val();
   song.genre = $("#genre").val();
   comm.socket.emit('submit', song);
   var menu = document.getElementById( 'bt-menu' );
   classie.remove( menu, 'bt-menu-open' );
   classie.add( menu, 'bt-menu-close' );
+  $("#bt-menu .bt-form").getNiceScroll().hide();
   $("#name").val('');
   $("#artist").val('');
-  //$("#album").val('');
   $("#url").val('');
   $("#genre").val('');
 });
