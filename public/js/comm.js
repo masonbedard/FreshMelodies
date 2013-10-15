@@ -23,7 +23,7 @@ comm.createEntries = function(data) {
 
       text += "<div class='controlcontainer'>" +
                 "<i class='icon-play control play'></i>" +
-                "<i class='icon-step-backward control rewind'></i>" +
+                "<i class='icon-backward control rewind'></i>" +
               "</div>" +
               "<br>";
 
