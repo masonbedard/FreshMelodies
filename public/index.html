@@ -44,14 +44,12 @@
   <body>
   <div id='mediacontainer'></div>
   <div class='container'>
-    <header class="codrops-header">
     <div id="wrapper">
       <div id='title' class='col'>fresh melodies</div>
       <br/>
       <div id="songsContainer" class="col"></div>
       <div id="loading-spinner"/>
     </div>​
-    </header>
     <nav id="bt-menu" class="bt-menu">
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
       <div class="bt-form">
@@ -87,22 +85,17 @@
       </div>
     </nav>
   </div>
-
-
-
-
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var jq = {};
-      jq.doc = $(document);
-      jq.songsContainer = $('#songsContainer');
-    </script>
-    <script src="js/youtubeapi.js"></script>
-    <script src="https://w.soundcloud.com/player/api.js"></script>
-    <script src="js/comm.js"></script>
-    <script src="js/classie.js"></script>
-    <script src="js/borderMenu.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var jq = {};
+    jq.doc = $(document);
+    jq.songsContainer = $('#songsContainer');
+  </script>
+  <script src="js/youtubeapi.js"></script>
+  <script src="https://w.soundcloud.com/player/api.js"></script>
+  <script src="js/comm.js"></script>
+  <script src="js/classie.js"></script>
+  <script src="js/borderMenu.js"></script>
   </body>
 </html>
 

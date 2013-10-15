@@ -20,8 +20,7 @@
   };
   YTPlayer.prototype.setup = function () {
     if (this.videoId != null) {
-      console.log('yt'+this.id);
-      console.log(this.videoId);
+      $('#mediacontainer').append("<div class='mediaplayer' id='yt" + this.id + "'></div>");
       this.player = new YT.Player('yt'+this.id, {
         height: $('.entry').height() * .95,
         width: 200,
@@ -58,6 +57,7 @@
     this.ready = false;
   }
   SCDPlayer.prototype.setup = function() {
+    $('#mediacontainer').append("<div class='mediaplayer' id='scd" + this.id + "'></div>");
     var divId = 'scd' + this.id;
     var div = document.getElementById(divId);
     $(div).append("<iframe class='scplayer' id='scp"+
@@ -66,47 +66,47 @@
       "&auto_play=false' frameborder='no'></iframe>");
     var playerId = 'scp' + id;
     this.player = SC.Widget(playerId);
-  }
+  };
   SCDPlayer.prototype.play = function () {
     if (!ready) {
       this.setup();
       this.ready = true;
     }
     this.player.play();
-  }
+  };
   SCDPlayer.prototype.pause = function () {
     if (this.player) {
       this.player.pause();
     }
-  }
+  };
   SCDPlayer.prototype.rewind = function () {
     if (this.player) {
       this.player.seekTo(0);
     }
-  }
+  };
   window.SCDPlayer = SCDPlayer;
 
   function NullPlayer () {
-    console.log("No player available for content.")
+    console.log("No player available for content.");
   }
   NullPlayer.prototype.play = function () {
-    console.log("No player available for content.")
-  }
+    console.log("No player available for content.");
+  };
   NullPlayer.prototype.pause = function () {
-    console.log("No player available for content.")
-  }
+    console.log("No player available for content.");
+  };
   NullPlayer.prototype.rewind = function () {
-    console.log("No player available for content.")
-  }
+    console.log("No player available for content.");
+  };
   window.NullPlayer = NullPlayer;
 
-  window.CreatePlayer = function(url, id) {
+  window.CreatePlayer = function(id, url) {
     if (url.indexOf("youtube.com") != -1) {
-      return new YTPlayer(url,id);
+      return new YTPlayer(id,url);
     }
     else if (url.indexOf("soundcloud.com") != -1) {
-      return new SCDPlayer(url,id);
+      return new SCDPlayer(id,url);
     }
     return new NullPlayer();
-  }
+  };
 }());

@@ -14,31 +14,10 @@ comm.socket.on('no more songs', function() {
   more_songs = false;
 });
 
-comm.parseurl = function(url) {
-  if (url.indexOf("youtube.com") != -1) {
-    return 1;
-  }
-  else if (url.indexOf("soundcloud.com") != -1) {
-    return 2;
-  }
-  return 0;
-}
-
-comm.youtubeLinkParser = function(url) {
-  var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
-  var match = url.match(regExp);
-  if (match && match[2].length == 11) {
-    return match[2];
-  } else {
-    return null;
-  }
-}
-
 comm.createEntries = function(data) {
   var text = '';
   for (var i=0;i<data.length;i++) {
     if (!comm.entries[data[i]._id]) {
-      var knownsite = comm.parseurl(data[i].url);
       text += "<div class='entry' id='" + data[i]._id + "'>" +
                "<span class='field'>\"" + data[i].name + "\"</span>";
 
@@ -51,20 +30,12 @@ comm.createEntries = function(data) {
       text += "<span class='field'>" + data[i].artist + "</span><br>" +
               "<span class='field'>" + data[i].genre +  "</span></div><br>";
 
-      if (knownsite === 1) {
-        $('#mediacontainer').append("<div class='mediaplayer' id='yt" + data[i]._id + "'></div>");
-      }
-      else if (knownsite === 2) {
-        $('#mediacontainer').append("<div class='mediaplayer' id='scd" + data[i]._id + "'></div>");
-      }
-
       var entry = {};
       entry.name = data[i].name;
       entry.artist = data[i].artist;
-      entry.knownsite = knownsite;
       entry.url = data[i].url;
+      entry.player = CreatePlayer(data[i]._id, data[i].url);
       entry.playing = false;
-      entry.mediastarted = false;
       comm.entries[data[i]._id] = entry;
     }
   }
@@ -78,66 +49,13 @@ comm.socket.on('more songs', function(data) {
   comm.createEntries(data);
 });
 
-comm.setupYT = function(url, id) {
-  var videoId = comm.youtubeLinkParser(url);
-  if (videoId != null) {
-    comm.entries[id].player = new YT.Player('yt'+id, {
-      height: $('.entry').height() * .95,
-      width: 200,
-      videoId: videoId,
-      events: {
-        'onReady': onPlayerReady
-      }
-    });
-  }
-};
-
-comm.setupSC = function(url, id) {
-  var divId = 'scd' + id;
-  var div = document.getElementById(divId);
-  $(div).append("<iframe class='scplayer' id='scp"+
-    id+"' src='http://w.soundcloud.com/player/?url="+
-    url+"&show_artwork=false&liking=false&sharing=false"+
-    "&auto_play=true' frameborder='no'></iframe>");
-  var playerId = 'scp' + id;
-  comm.entries[id].player = SC.Widget(playerId);
-}
-
 comm.playSong = function(id) {
-  var entry = comm.entries[id];
   if (comm.playing_id != undefined) { // song playing, stop it
     comm.pauseSong(comm.playing_id);
   }
-  if (!entry.mediastarted) {
-
-    var url = entry.url;
-
-    if (entry.knownsite === 1) {
-      comm.setupYT(url, id);
-    }
-    else if (entry.knownsite === 2) {
-      comm.setupSC(url, id);
-    }
-    else {
-      console.log('not set up yet');
-    }
-    comm.entries[id].mediastarted = true;
-    if (localStorage.getItem(id) == undefined) {
-      localStorage.setItem(id, true);
-      comm.socket.emit('add listen',{'_id':id});
-    }
-  }
-  else {
-    if (entry.knownsite === 1) {
-      comm.entries[id].player.playVideo();
-    }
-    else if (entry.knownsite === 2) {
-      comm.entries[id].player.play();
-    }
-    else {
-      console.log("being set up");
-    }
-  }
+  var entry = comm.entries[id];
+  entry.player.play();
+  entry.playing = true;
   comm.playing_id = id;
   $("#" + id + " .play").removeClass("icon-play").removeClass("play")
          .addClass("icon-pause").addClass("pause");
@@ -146,37 +64,18 @@ comm.playSong = function(id) {
 
 comm.pauseSong = function(id) {
   var entry = comm.entries[id];
-  if (entry.mediastarted && entry.playing) {
+  if (entry.playing) {
+    entry.player.pause();
+    comm.playing_id = undefined;
     $("#" + id + " .pause").removeClass("icon-pause").removeClass("pause")
            .addClass("icon-play").addClass("play");
-    if (entry.knownsite === 1) {
-      comm.entries[id].player.pauseVideo();
-      comm.entries[id].playing = false;
-    }
-    else if (entry.knownsite === 2) {
-      comm.entries[id].player.pause();
-      comm.entries[id].playing = false;
-    }
-    else {
-      console.log("still being set up");
-    }
-    comm.playing_id = undefined;
+    entry.playing = false;
   }
 }
 
 comm.rewindSong = function(id) {
   var entry = comm.entries[id];
-  if (entry.mediastarted) {
-    if (entry.knownsite === 1) {
-      comm.entries[id].player.seekTo(0, false);
-    }
-    else if (entry.knownsite === 2) {
-      comm.entries[id].player.seekTo(0);
-    }
-    else {
-      console.log("still being set up");
-    }
-  }
+  entry.player.rewind();
 }
 
 jq.doc.on('click', '.pause', function() {
