@@ -228,6 +228,7 @@ $("#filter_button").bind('click', function() {
 });
 
 $("#submit_button").bind('click', function() {
+console.log('submission');
   var song = {};
   song.name = $("#name").val();
   song.artist = $("#artist").val();
