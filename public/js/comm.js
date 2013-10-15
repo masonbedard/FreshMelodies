@@ -49,8 +49,8 @@ comm.createEntries = function(data) {
         data[i].name+"\"</span>";
 
       text += "<div class='controlcontainer'><i class='icon-play control play' id='"+
-        url_no_slashes+"'></i><i class='icon-pause control pause' id='"+
-        url_no_slashes+"'></i><i class='icon-step-backward control rewind' id='"+
+        url_no_slashes+"'></i>"+
+        "<i class='icon-backward control rewind' id='"+
         url_no_slashes+"'></i></div><br>";
 
       text += "<span class='field'>"+
@@ -211,6 +211,7 @@ $("#filter_button").bind('click', function() {
 });
 
 $("#submit_button").bind('click', function() {
+console.log('submission');
   var song = {};
   song.name = $("#name").val();
   song.artist = $("#artist").val();
