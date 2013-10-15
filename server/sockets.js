@@ -34,13 +34,13 @@ var connect = function(socket) {
 	});
 	socket.on('submit', function(data) {
 		var url = new String(data.url);
-           
+
 		if (url.indexOf("youtube.com") != -1) {
 			youtubeHandler(data, url);
 		}
-        else if (url.indexOf("soundcloud.com") != -1) {
-            soundcloudHandler(data,url);
-        }
+    else if (url.indexOf("soundcloud.com") != -1) {
+      soundcloudHandler(data,url);
+    }
 		else {
 	        Song.insertOrUpdate(data.name, data.artist, data.genre, data.url);
 		}
@@ -74,7 +74,7 @@ function soundcloudHandler(data,url) {
 
 
 function youtubeHandler(data, url) {
-	var vid = youtubeLinkParser(url);	
+	var vid = youtubeLinkParser(url);
 	youtube.video(vid).details(function(err, details) {
 		if (err === null) {
 			console.log(details.viewCount);

@@ -63,12 +63,12 @@
     $(div).append("<iframe class='scplayer' id='scp"+
       this.id+"' src='http://w.soundcloud.com/player/?url="+
       this.url+"&show_artwork=false&liking=false&sharing=false"+
-      "&auto_play=false' frameborder='no'></iframe>");
-    var playerId = 'scp' + id;
+      "&auto_play=true' frameborder='no'></iframe>");
+    var playerId = 'scp' + this.id;
     this.player = SC.Widget(playerId);
   };
   SCDPlayer.prototype.play = function () {
-    if (!ready) {
+    if (!this.ready) {
       this.setup();
       this.ready = true;
     }
