@@ -76,7 +76,10 @@ $(document).ready(
       else {
         classie.remove( menu, 'bt-menu-close' );
         classie.add( menu, 'bt-menu-open' );
-        $("#bt-menu .bt-form").getNiceScroll().show();
+        setTimeout(function() {
+          $("#bt-menu .bt-form").getNiceScroll().resize();
+          $("#bt-menu .bt-form").getNiceScroll().show();
+        }, 300);
         overlay.addEventListener( eventtype, closeClickFn );
       }
     });
@@ -87,7 +90,10 @@ $(document).ready(
         ev.preventDefault();
         classie.remove( menu, 'bt-menu-close' );
         classie.add( menu, 'bt-menu-open' );
-        $("#bt-menu .bt-form").getNiceScroll().show();
+        setTimeout(function() {
+          $("#bt-menu .bt-form").getNiceScroll().resize();
+          $("#bt-menu .bt-form").getNiceScroll().show();
+        }, 300);
         overlay.addEventListener( eventtype, closeClickFn );
       });
     }
