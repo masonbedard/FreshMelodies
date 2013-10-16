@@ -59,6 +59,7 @@ comm.createEntries = function(data) {
 
           $('#'+data[i]._id +' .volumecontainer input').bind("slider:changed", function (event, data) {
               console.log('setting volume to ' + data.value * 10000 / 82);
+              var id = $(this).parent().parent().attr('id');
               comm.setVolume(id, data.value * 10000 / 82);
           });
       }

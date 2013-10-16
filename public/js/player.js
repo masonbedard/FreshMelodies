@@ -89,6 +89,12 @@
       this.player.seekTo(0);
     }
   };
+  SCDPlayer.prototype.setVolume = function (volume) {
+    if (this.player) {
+      this.player.setVolume(volume);
+    }
+  };
+
   window.SCDPlayer = SCDPlayer;
 
   function NullPlayer () {
@@ -101,6 +107,9 @@
     console.log("No player available for content.");
   };
   NullPlayer.prototype.rewind = function () {
+    console.log("No player available for content.");
+  };
+  NullPlayer.prototype.setVolume = function (volume) {
     console.log("No player available for content.");
   };
   window.NullPlayer = NullPlayer;
