@@ -18,17 +18,50 @@ comm.createEntries = function(data) {
   var text = '';
   for (var i=0;i<data.length;i++) {
     if (!comm.entries[data[i]._id]) {
+      var known;
+      if (data[i].url.indexOf("youtube.com") != -1 ||
+        data[i].url.indexOf("soundcloud.com") != -1) {
+        known = true;
+      }
+      else {
+        known = false;
+      }
       text += "<div class='entry' id='" + data[i]._id + "'>" +
                "<span class='field'>\"" + data[i].name + "\"</span>";
+      if (known) {
+          text += "<div class='controlcontainer'>" +
+            "<i class='icon-play control play'></i>" +
+            "<i class='icon-backward control rewind'></i>" +
+            "</div><br>";
+      }
+      else {
+        text += "<br>";
+      }
 
-      text += "<div class='controlcontainer'>" +
-                "<i class='icon-play control play'></i>" +
-                "<i class='icon-backward control rewind'></i>" +
-              "</div>" +
-              "<br>";
+      text += "<span class='field'>" + data[i].artist + "</span>";
 
-      text += "<span class='field'>" + data[i].artist + "</span><br>" +
-              "<span class='field'>" + data[i].genre +  "</span></div><br>";
+      if (known) {
+        text += "<div class='volumecontainer'><input id='test' type='text'>"+
+          "</div><br>";
+      }
+      else {
+        text += "<br>";
+      }
+      text += "<span class='field'>" + data[i].genre +  "</span>"+
+          "<a class='url' target='_blank' href='"+data[i].url+"'>source</a></div><br>";
+
+      jq.songsContainer.append(text);
+      text = '';
+
+      if (known) {
+          $('#'+data[i]._id +' .volumecontainer input').simpleSlider();
+          $('#'+data[i]._id +' .volumecontainer input').simpleSlider('setValue', '.61');
+
+          $('#'+data[i]._id +' .volumecontainer input').bind("slider:changed", function (event, data) {
+              console.log('setting volume to ' + data.value * 10000 / 82);
+              comm.setVolume(id, data.value * 10000 / 82);
+          });
+      }
 
       var entry = {};
       entry.name = data[i].name;
@@ -39,7 +72,7 @@ comm.createEntries = function(data) {
       comm.entries[data[i]._id] = entry;
     }
   }
-  jq.songsContainer.append(text);
+  //jq.songsContainer.append(text);
   comm.count += data.length + 1;
   loading = false;
   $("#loading-spinner").removeClass("loading-spinner-visible");
@@ -78,6 +111,11 @@ comm.rewindSong = function(id) {
   entry.player.rewind();
 }
 
+comm.setVolume = function(id, volume) {
+  var entry = comm.entries[id];
+  entry.player.setVolume(volume);
+}
+
 jq.doc.on('click', '.pause', function() {
   var id = $(this).parent().parent().attr('id');
   comm.pauseSong(id);
@@ -91,6 +129,14 @@ jq.doc.on('click', '.rewind', function() {
 jq.doc.on('click', '.play', function() {
   var id = $(this).parent().parent().attr('id');
   comm.playSong(id);
+});
+
+jq.doc.on('click', 'a', function() {
+    var id = $(this).parent().attr('id');
+    console.log(id);
+    //local storage check
+    // comm.socket.emit('add listen')
+    console.log("LINKED");
 });
 
 $(window).scroll(function() {

@@ -11,6 +11,18 @@ html {
   font-weight:lighter;
 }
 
+.url {
+    float:right;
+    margin-right:5px;
+    text-decoration:none;
+    font-size:28px;
+    color:#2a5db0;
+}
+a:visited {
+    color:#2a5db0;
+}
+
+
 .container {
   background-color:#E46C62
 }
@@ -21,12 +33,11 @@ html {
 
 
 body  {
-  background: #04a466;
+  background-color:#E46C62;
 }
 
 .field {
   font-size: 28px;
-  text-transform:lowercase;
   margin-left: 5px;
   color:#333;
 }
@@ -39,6 +50,11 @@ body  {
 }
 
 .controlcontainer {
+  float:right;
+  margin-right:5px;
+}
+
+.volumecontainer {
   float:right;
   margin-right:5px;
 }

@@ -5,4 +5,5 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 function onPlayerReady(event) {
   event.target.playVideo();
+  event.target.setVolume(74);
 }

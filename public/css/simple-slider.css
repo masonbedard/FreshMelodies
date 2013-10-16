@@ -1,0 +1,15 @@
+.slider {
+  width: 100px;
+}
+
+.slider > .dragger {
+  background: #333;
+  width: 18px;
+  height: 18px;
+}
+
+.slider > .track, .slider > .highlight-track {
+  background: #ccc;
+  height: 18px;
+}
+

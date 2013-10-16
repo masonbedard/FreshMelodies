@@ -3,7 +3,7 @@
 ### TODO
 
 - [x] Take out visible points
-- [ ] After user listens to song once, stop increasing listen count for them
+- [ ] After user listens or clicks link, stop increasing listen count for them
 - [x] Make points 0 for first submission
 - [x] Take out album
 - [ ] Add an about

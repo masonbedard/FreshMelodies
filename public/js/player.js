@@ -36,7 +36,7 @@
       this.setup();
       this.ready = true;
     } else {
-      this.player.playVideo();
+    this.player.playVideo();
     }
   };
   YTPlayer.prototype.pause = function () {
@@ -47,6 +47,11 @@
   YTPlayer.prototype.rewind = function () {
     if (this.player) {
       this.player.seekTo(0, false);
+    }
+  };
+  YTPlayer.prototype.setVolume = function (volume) {
+    if (this.player) {
+        this.player.setVolume(volume);
     }
   };
   window.YTPlayer = YTPlayer;
