@@ -130,13 +130,19 @@ jq.doc.on('click', '.rewind', function() {
 jq.doc.on('click', '.play', function() {
   var id = $(this).parent().parent().attr('id');
   comm.playSong(id);
+  if (localStorage.getItem(id) == undefined) {
+    localStorage.setItem(id, true);
+    comm.socket.emit('add listen',{'_id':id});
+  }
 });
 
 jq.doc.on('click', 'a', function() {
     var id = $(this).parent().attr('id');
     console.log(id);
-    //local storage check
-    // comm.socket.emit('add listen')
+    if (localStorage.getItem(id) == undefined) {
+      localStorage.setItem(id, true);
+      comm.socket.emit('add listen',{'_id':id});
+    }
     console.log("LINKED");
 });
 
@@ -149,7 +155,6 @@ $(window).scroll(function() {
         loading = false;
         $("#loading-spinner").removeClass("loading-spinner-visible");
       }, 1000);
-      console.log("here");
       $("#loading-spinner").addClass("loading-spinner-visible");
       comm.socket.emit('load songs',{'genre':genre, num:comm.count});
     }
@@ -157,18 +162,28 @@ $(window).scroll(function() {
 });
 
 $("#filter_button").bind('click', function() {
+  comm.count = 0;
+  loading = true;
+  more_songs = true;
+  comm.count = 0;
+  if (comm.playing_id != undefined) {
+    comm.entries[comm.playing_id].player.pauseSong();
+  }
+  comm.playing_id  = undefined;
+  comm.entries = {};
   if ($('#g_complete').val() === '') {
-    comm.socket.emit('populate songs', {'genre':'all'});
     genre = 'all';
   } else {
     genre = $('#g_complete').val();
-    comm.socket.emit('populate songs', {'genre':genre});
     $('#g_complete').val('');
   }
+  jq.songsContainer.empty();
+  console.log('emit' + genre + comm.count);
+  comm.socket.emit('load songs',{'genre':genre, num:0});
   var menu = document.getElementById( 'bt-menu' );
   classie.remove( menu, 'bt-menu-open' );
   classie.add( menu, 'bt-menu-close' );
-
+  $("#bt-menu .bt-form").getNiceScroll().hide();
   jq.songsContainer.html('');
   comm.count = 0;
 });
