@@ -184,25 +184,54 @@ $("#filter_button").bind('click', function() {
   classie.remove( menu, 'bt-menu-open' );
   classie.add( menu, 'bt-menu-close' );
   $("#bt-menu .bt-form").getNiceScroll().hide();
+  $("#submit_message").text('');
   jq.songsContainer.html('');
   comm.count = 0;
   $("#loading-spinner").addClass("loading-spinner-visible");
 });
 
 $("#submit_button").bind('click', function() {
-console.log('submission');
   var song = {};
   song.name = $("#name").val();
   song.artist = $("#artist").val();
   song.url = $("#url").val();
   song.genre = $("#genre").val();
-  comm.socket.emit('submit', song);
-  var menu = document.getElementById( 'bt-menu' );
-  classie.remove( menu, 'bt-menu-open' );
-  classie.add( menu, 'bt-menu-close' );
-  $("#bt-menu .bt-form").getNiceScroll().hide();
-  $("#name").val('');
-  $("#artist").val('');
-  $("#url").val('');
-  $("#genre").val('');
+  if (song.name === undefined || song.name === "") {
+    $("#submit_message").removeClass('valid').addClass('invalid').text('invalid song name');
+  } else if (song.artist === undefined || song.artist === "") {
+    $("#submit_message").removeClass('valid').addClass('invalid').text('invalid artist');
+  } else if (song.genre === undefined || availableTags.indexOf(song.genre) === -1) {
+    $("#submit_message").removeClass('valid').addClass('invalid').text('select genre from list');
+  } else if (song.url === undefined || song.url === "") {
+    $("#submit_message").removeClass('valid').addClass('invalid').text('invalid url');
+  } else {
+    comm.socket.emit('submit', song);
+  }
+});
+
+comm.socket.on("submit result", function(data) {
+  if (data.result === true) {
+    $("#name").val('');
+    $("#artist").val('');
+    $("#url").val('');
+    $("#genre").val('');
+    $("#submit_message").removeClass('invalid').addClass('valid').text('submitted!');
+  } else {
+    $("#submit_message").removeClass('valid').addClass('invalid');
+    $("#submit_message").text(data.message);
+  }
+
+});
+
+$("#g_complete").keypress(function(event) {
+    if (event.which == 13) {
+        event.preventDefault();
+        $("#filter_button").click();
+    }
+});
+$("#url").keypress(function(event) {
+    if (event.which == 13) {
+        event.preventDefault();
+        $("#submit_button").click();
+    }
 });

@@ -361,3 +361,16 @@ input {
   margin: auto;
   display: block;
 }
+
+#submit_message {
+  padding-top: 20px;
+  width: 230px;
+}
+
+#submit_message.valid {
+  color: #4FFEB0;
+}
+
+#submit_message.invalid {
+  color: #FF3B15;
+}

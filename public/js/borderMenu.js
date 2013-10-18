@@ -53,6 +53,7 @@ $(document).ready(
       // event type (if mobile use touch events)
       eventtype = mobilecheck() ? 'touchstart' : 'click',
       resetMenu = function() {
+        $("#submit_message").text('');
         $("#bt-menu .bt-form").getNiceScroll().hide();
         classie.remove( menu, 'bt-menu-open' );
         classie.add( menu, 'bt-menu-close' );

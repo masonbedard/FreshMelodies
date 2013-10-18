@@ -14,8 +14,7 @@
         <script src="js/player.js"></script>
         <script src='js/simple-slider.js'></script>
         <script>
-        $(function() {
-          var availableTags = [
+        var availableTags = [
             "Alternative",
             "Dance",
             "Electronic",
@@ -34,6 +33,7 @@
             "Future Garage",
             "Experimental"
           ];
+        $(function() {
           $( "#g_complete" ).autocomplete({
             source: availableTags
           });
@@ -85,6 +85,7 @@
         <div class="bt-button">
           <button id="submit_button" class="btn btn-6 btn-6a" type="button">submit</button>
         </div>
+        <div id="submit_message"></div>
       </div>
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
     </nav>
