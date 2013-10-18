@@ -186,6 +186,7 @@ $("#filter_button").bind('click', function() {
   $("#bt-menu .bt-form").getNiceScroll().hide();
   jq.songsContainer.html('');
   comm.count = 0;
+  $("#loading-spinner").addClass("loading-spinner-visible");
 });
 
 $("#submit_button").bind('click', function() {

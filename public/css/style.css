@@ -49,6 +49,11 @@ body  {
   cursor:pointer;
 }
 
+.control:active {
+  font-size: 24px;
+  padding-right: 4px;
+}
+
 .controlcontainer {
   float:right;
   margin-right:5px;
@@ -240,9 +245,9 @@ input {
   transition: transform 0.4s, opacity 0.2s, visibility 0s 0.3s;
 }
 
-.bt-menu.bt-menu-open .bt-text,
-.bt-menu.bt-menu-open .bt-field,
-.bt-menu.bt-menu-open .bt-button {
+.bt-menu.bt-menu-open .bt-form .bt-text,
+.bt-menu.bt-menu-open .bt-form .bt-field,
+.bt-menu.bt-menu-open .bt-form .bt-button {
   visibility: visible;
   opacity: 1;
   -webkit-transition: -webkit-transform 0.3s;
@@ -253,41 +258,41 @@ input {
 
 
 
-.bt-menu div:nth-child(2) {
-  -webkit-transform: translate3d(-150%,200%,0);
+.bt-menu .bt-form div:nth-child(1) {
+  -webkit-transform: translate3d(-150%,300%,0);
   transform: translate3d(-200%,100%,0);
 }
-.bt-menu div:nth-child(3) {
-  -webkit-transform: translate3d(-150%,200%,0);
+.bt-menu .bt-form div:nth-child(2) {
+  -webkit-transform: translate3d(-100%,200%,0);
   transform: translate3d(-200%,100%,0);
 }
 
-.bt-menu div:nth-child(6) {
+.bt-menu .bt-form div:nth-child(5) {
   -webkit-transform: translate3d(-150%,100%,0);
   transform: translate3d(-200%,-200%,0);
 }
 
-.bt-menu div:nth-child(7) {
+.bt-menu .bt-form div:nth-child(6) {
   -webkit-transform: translate3d(-150%,50%,0);
   transform: translate3d(-200%,-200%,0);
 }
 
-.bt-menu div:nth-child(8) {
+.bt-menu .bt-form div:nth-child(7) {
   -webkit-transform: translate3d(-150%,-50%,0);
   transform: translate3d(-200%,-200%,0);
 }
 
-.bt-menu div:nth-child(9) {
+.bt-menu .bt-form div:nth-child(8) {
   -webkit-transform: translate3d(-150%,-100%,0);
   transform: translate3d(-200%,-200%,0);
 }
 
-.bt-menu div:nth-child(10) {
+.bt-menu .bt-form div:nth-child(9) {
   -webkit-transform: translate3d(-150%,-200%,0);
   transform: translate3d(-200%,-200%,0);
 }
 
-.bt-menu div:nth-child(11) {
+.bt-menu .bt-form div:nth-child(10) {
   -webkit-transform: translate3d(-150%,-300%,0);
   transform: translate3d(-200%,-200%,0);
 }
