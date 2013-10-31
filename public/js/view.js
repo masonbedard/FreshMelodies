@@ -5,8 +5,9 @@ view.display_entries = function(id, name, artist, genre, url, known) {
     "<span class='field'>\""+name+"\"</span>";
   if (known) {
     text += "<div class='controlcontainer'>" +
-      "<i class='icon-play control play'></i>" +
-      "<i class='icon-backward control rewind'></i>" +
+      "<div class='playcontainer'><i class='icon-play control play'></i></div>" +
+      //"<i class='icon-backward control rewind'></i>" +
+      "<div class='progresscontainer'><input type='text'></div>"+
       "</div><br>";
   }
   else {

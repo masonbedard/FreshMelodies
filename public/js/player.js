@@ -36,7 +36,7 @@
       this.setup();
       this.ready = true;
     } else {
-    this.player.playVideo();
+      this.player.playVideo();
     }
   };
   YTPlayer.prototype.pause = function () {
@@ -54,6 +54,17 @@
         this.player.setVolume(volume);
     }
   };
+  YTPlayer.prototype.seekTo = function(seconds) {
+    if (this.player) {
+        this.player.seekTo(seconds, true);
+    }
+  };
+  /*
+  YTPlayer.prototype.getDuration = function() {
+    if (this.player) {
+        model.curr_duration = this.player.getDuration();
+    }
+  };*/
   window.YTPlayer = YTPlayer;
 
   function SCDPlayer (id, url) {

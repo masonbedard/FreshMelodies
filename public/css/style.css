@@ -55,6 +55,17 @@ body  {
   margin-right:5px;
 }
 
+.playcontainer {
+  float:left;
+  margin-right:5px;
+  margin-top:3px;
+}
+
+.progresscontainer {
+  float:right;
+}
+
+
 .volumecontainer {
   float:right;
   margin-right:5px;

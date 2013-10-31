@@ -4,6 +4,9 @@ model.loading = true;
 model.genre = 'all';
 model.more_songs = true;
 model.curr_volume = 0;
+model.curr_duration = 0;
+model.curr_progress_value = 0;
+model.seconds_per_tick = 0;
 
 model.num = 0;
 model.playing_id = undefined;
@@ -30,6 +33,14 @@ model.check_if_url_known = function(url) {
 };
 
 model.enableSliders = function(id) {
+  $('#'+id+' .controlcontainer .progresscontainer input').simpleSlider();
+  $('#'+id+' .controlcontainer .progresscontainer .slider').css('width', '150');
+  $('#'+id+' .controlcontainer .progresscontainer input').bind("slider:changed", function(event, data) {
+      // NEED TO CHECK TO SEE IF USER ACTUALLLY CLICKED SOMETHING OTHERWISE DONT DO THIS SHIT
+      var clickedId = $(this).parent().parent().parent().attr('id');
+      model.seekTo(clickedId, data.value * 100 * model.seconds_per_tick);
+  });
+
   $('#'+id+' .volumecontainer input').simpleSlider();
   $('#'+id+' .volumecontainer input').simpleSlider('setValue', '.61');
   $('#'+id+' .volumecontainer input').bind("slider:changed", function (event, data) {
@@ -141,6 +152,21 @@ model.setVolume = function(id, volume) {
   entry.player.setVolume(volume);
 };
 
+
+model.calculate_progress = function() {
+  model.seconds_per_tick = model.curr_duration / 132;
+  model.calculate_progress_aux();
+}
+
+model.calculate_progress_aux = function() {
+  setTimeout(function() {
+      model.curr_progress_value += .01;
+      console.log(model.curr_progress_value);
+      $('#'+model.playing_id+" .controlcontainer .progresscontainer input").simpleSlider('setValue', model.curr_progress_value);
+      model.calculate_progress();
+  }, model.seconds_per_tick * 1000);
+}
+
 model.playSong = function(id) {
   if (model.playing_id != undefined) { // song playing, stop it
     model.pauseSong(model.playing_id);
@@ -170,4 +196,9 @@ model.rewindSong = function(id) {
   var entry = model.entries[id];
   entry.player.rewind();
 };
+
+model.seekTo = function(id, seconds) {
+  var entry = model.entries[id];
+  entry.player.seekTo(seconds);
+}
 

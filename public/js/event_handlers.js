@@ -1,5 +1,5 @@
 jq.doc.on('click', '.pause', function() {
-  var id = $(this).parent().parent().attr('id');
+  var id = $(this).parent().parent().parent().attr('id');
   model.pauseSong(id);
 });
 
@@ -9,7 +9,7 @@ jq.doc.on('click', '.rewind', function  () {
 });
 
 jq.doc.on('click', '.play', function() {
-  var id = $(this).parent().parent().attr('id');
+  var id = $(this).parent().parent().parent().attr('id');
   model.playSong(id);
 });
 

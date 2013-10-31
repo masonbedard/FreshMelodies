@@ -13,7 +13,7 @@ var __slice = [].slice,
   var SimpleSlider;
   SimpleSlider = (function() {
 
-    function SimpleSlider(input, options) {
+    function SimpleSlider(input, options, progress) {
       var ratio,
         _this = this;
       this.input = input;
@@ -35,9 +35,11 @@ var __slice = [].slice,
         userSelect: "none",
         boxSizing: "border-box"
       }).insertBefore(this.input);
+      /*
       if (this.input.attr("id")) {
         this.slider.attr("id", this.input.attr("id") + "-slider");
       }
+      */
       this.track = this.createDivElement("track").css({
         width: "100%"
       });
