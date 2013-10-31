@@ -49,10 +49,6 @@ body  {
   cursor:pointer;
 }
 
-.control:active {
-  font-size: 24px;
-  padding-right: 4px;
-}
 
 .controlcontainer {
   float:right;
