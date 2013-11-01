@@ -37,6 +37,7 @@
       this.ready = true;
     } else {
       this.player.playVideo();
+      model.calculate_progress(this.player.getDuration());
     }
   };
   YTPlayer.prototype.pause = function () {
@@ -59,12 +60,6 @@
         this.player.seekTo(seconds, true);
     }
   };
-  /*
-  YTPlayer.prototype.getDuration = function() {
-    if (this.player) {
-        model.curr_duration = this.player.getDuration();
-    }
-  };*/
   window.YTPlayer = YTPlayer;
 
   function SCDPlayer (id, url) {
@@ -82,6 +77,13 @@
       "&auto_play=true' frameborder='no'></iframe>");
     var playerId = 'scp' + this.id;
     this.player = SC.Widget(playerId);
+    console.log('here');
+    this.player.getDuration(function(err, results) {
+        console.log(err);
+        console.log(results);
+        //model.entries[model.playing_id].duration = 
+    });
+    console.log("HEYY THOUGH");
   };
   SCDPlayer.prototype.play = function () {
     if (!this.ready) {
@@ -103,6 +105,11 @@
   SCDPlayer.prototype.setVolume = function (volume) {
     if (this.player) {
       this.player.setVolume(volume);
+    }
+  };
+  SCDPlayer.prototype.seekTo = function (seconds) {
+    if (this.player) {
+      this.player.seekTo(seconds * 1000);
     }
   };
 

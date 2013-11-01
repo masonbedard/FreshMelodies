@@ -6,6 +6,5 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 function onPlayerReady(event) {
   event.target.playVideo();
   event.target.setVolume(74);
-  model.curr_duration = event.target.getDuration();
-  model.calculate_progress();
+  model.calculate_progress(event.target.getDuration());
 }

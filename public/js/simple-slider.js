@@ -61,6 +61,9 @@ var __slice = [].slice,
       this.dragger.css({
       });
       this.track.mousedown(function(e) {
+          //ADDING THIS IN HERE
+        console.log('mousedown');
+        model.progress_clicked = true;
         return _this.trackEvent(e);
       });
       if (this.settings.highlight) {
@@ -161,6 +164,8 @@ var __slice = [].slice,
         this.pagePos = pagePos;
         ratio = pagePos / this.slider.outerWidth();
         value = this.ratioToValue(ratio);
+        console.log('value');
+        console.log(value);
         this.valueChanged(value, ratio, "domDrag");
         if (this.settings.snap) {
           return this.setSliderPositionFromValue(value, animate);

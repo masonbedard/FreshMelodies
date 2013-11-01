@@ -4,9 +4,7 @@ model.loading = true;
 model.genre = 'all';
 model.more_songs = true;
 model.curr_volume = 0;
-model.curr_duration = 0;
-model.curr_progress_value = 0;
-model.seconds_per_tick = 0;
+model.progress_clicked = false;
 
 model.num = 0;
 model.playing_id = undefined;
@@ -32,17 +30,45 @@ model.check_if_url_known = function(url) {
   }
 };
 
+model.progress_value_to_seconds = function(progress_value) {
+  return progress_value * model.entries[model.playing_id].duration / .91;
+};
+
+model.calculate_progress = function(duration) {
+  model.entries[model.playing_id].duration = duration;
+  var num_of_ticks_bar_must_represent = duration * 2;
+  model.entries[model.playing_id].value_per_tick = .91 / num_of_ticks_bar_must_represent;
+  //model.entries[model.playing_id].value_per_tick = .91/duration;
+  model.track_progress();
+};
+
+model.track_progress = function() {
+  setTimeout(function() {
+      if (model.playing_id) {
+          if (!model.progress_clicked) {
+            var id = model.playing_id;
+            model.entries[id].progress_value += model.entries[id].value_per_tick;
+            $('#'+id+" .controlcontainer .progresscontainer input").simpleSlider("setValue", model.entries[id].progress_value);
+          }
+          model.track_progress();
+      }
+  },500);
+};
+
 model.enableSliders = function(id) {
   $('#'+id+' .controlcontainer .progresscontainer input').simpleSlider();
-  $('#'+id+' .controlcontainer .progresscontainer .slider').css('width', '150');
+  $('#'+id+' .controlcontainer .progresscontainer .slider').css('width', '200');
   $('#'+id+' .controlcontainer .progresscontainer input').bind("slider:changed", function(event, data) {
-      // NEED TO CHECK TO SEE IF USER ACTUALLLY CLICKED SOMETHING OTHERWISE DONT DO THIS SHIT
-      var clickedId = $(this).parent().parent().parent().attr('id');
-      model.seekTo(clickedId, data.value * 100 * model.seconds_per_tick);
+    var clickedId = $(this).parent().parent().parent().attr('id');
+    model.entries[clickedId].progress_value = data.value;
+    if (model.progress_clicked && model.playing_id === clickedId) {
+        var seconds = model.progress_value_to_seconds(model.entries[clickedId].progress_value);
+        model.seekTo(id, seconds);
+    }
   });
 
   $('#'+id+' .volumecontainer input').simpleSlider();
-  $('#'+id+' .volumecontainer input').simpleSlider('setValue', '.61');
+  $('#'+id+' .volumecontainer input').simpleSlider('setValue', '.82');
   $('#'+id+' .volumecontainer input').bind("slider:changed", function (event, data) {
     var clickedId = $(this).parent().parent().attr('id');
     if (model.curr_volume != data.value * 10000 / 82) {
@@ -69,6 +95,8 @@ model.createEntries = function(data) {
       entry.url = data[i].url;
       entry.player = CreatePlayer(data[i]._id, data[i].url);
       entry.playing = false;
+      entry.progress_value = 0;
+      entry.duration = 0;
       model.entries[data[i]._id] = entry;
     }
   }
@@ -100,7 +128,7 @@ model.submission_results = function(data) {
   if (data.result === true) {
     view.successful_song_submission();
   } else {
-    view.unsuccessful_song_submission();
+    view.unsuccessful_song_submission(data);
   }
 };
 
@@ -152,32 +180,15 @@ model.setVolume = function(id, volume) {
   entry.player.setVolume(volume);
 };
 
-
-model.calculate_progress = function() {
-  model.seconds_per_tick = model.curr_duration / 132;
-  model.calculate_progress_aux();
-}
-
-model.calculate_progress_aux = function() {
-  setTimeout(function() {
-      model.curr_progress_value += .01;
-      console.log(model.curr_progress_value);
-      $('#'+model.playing_id+" .controlcontainer .progresscontainer input").simpleSlider('setValue', model.curr_progress_value);
-      model.calculate_progress();
-  }, model.seconds_per_tick * 1000);
-}
-
 model.playSong = function(id) {
   if (model.playing_id != undefined) { // song playing, stop it
     model.pauseSong(model.playing_id);
   }
-  var entry = model.entries[id];
-  entry.player.play();
-  entry.playing = true;
   model.playing_id = id;
+  model.entries[id].playing = true;
+  model.entries[id].player.play();
   $("#" + id + " .play").removeClass("icon-play").removeClass("play")
     .addClass("icon-pause").addClass("pause");
-  model.entries[id].playing = true;
   model.check_if_listen_added(id);
 };
 
@@ -200,5 +211,6 @@ model.rewindSong = function(id) {
 model.seekTo = function(id, seconds) {
   var entry = model.entries[id];
   entry.player.seekTo(seconds);
-}
+};
+
 

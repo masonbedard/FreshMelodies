@@ -22,6 +22,17 @@ jq.doc.on('click', '#filter_button', function() {
   model.filter();
 });
 
+jq.doc.on('mouseup', '.slider2', function() {
+  model.progress_clicked = false;
+  var id = $(this).parent().parent().parent().attr('id');
+});
+/*
+jq.doc.on('mousedown', '.track', function() {
+  console.log('mousedown');
+});
+*/
+
+
 jq.doc.on('click', '#submit_button', function() {
   model.submit_song();
 });
