@@ -23,8 +23,8 @@ jq.doc.on('click', '#filter_button', function() {
 });
 
 jq.doc.on('mouseup', '.slider2', function() {
+    console.log('mouseup');
   model.progress_clicked = false;
-  var id = $(this).parent().parent().parent().attr('id');
 });
 /*
 jq.doc.on('mousedown', '.track', function() {

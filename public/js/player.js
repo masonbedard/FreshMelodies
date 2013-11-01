@@ -37,7 +37,7 @@
       this.ready = true;
     } else {
       this.player.playVideo();
-      model.calculate_progress(this.player.getDuration());
+      model.calculate_progress();
     }
   };
   YTPlayer.prototype.pause = function () {
@@ -77,13 +77,6 @@
       "&auto_play=true' frameborder='no'></iframe>");
     var playerId = 'scp' + this.id;
     this.player = SC.Widget(playerId);
-    console.log('here');
-    this.player.getDuration(function(err, results) {
-        console.log(err);
-        console.log(results);
-        //model.entries[model.playing_id].duration = 
-    });
-    console.log("HEYY THOUGH");
   };
   SCDPlayer.prototype.play = function () {
     if (!this.ready) {
@@ -91,6 +84,7 @@
       this.ready = true;
     }
     this.player.play();
+    model.calculate_progress();
   };
   SCDPlayer.prototype.pause = function () {
     if (this.player) {

@@ -1,6 +1,9 @@
 .slider {
   width: 100px;
-  display:block;
+}
+
+.slider2 {
+    width:200px;
 }
 
 .slider > .dragger {

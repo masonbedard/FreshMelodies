@@ -9,6 +9,7 @@ var songSchema = new Schema({
   artist: String,
   genre: String,
   url: String,
+  duration: Number,
   points: { type: Number, default: 0 },
   date_added: { type: Date, default: Date.now },
 });
@@ -49,7 +50,7 @@ songSchema.statics.addListen = function(_id) {
   });
 }
 
-songSchema.statics.insertOrUpdate = function(name, artist, genre, url) {
+songSchema.statics.insertOrUpdate = function(name, artist, genre, url, duration) {
   this.find({name:name, artist:artist}, function(err, results) {
 
 	if (err) {
@@ -66,11 +67,12 @@ songSchema.statics.insertOrUpdate = function(name, artist, genre, url) {
 		  	  name: name,
 		  	  artist: artist,
 		  	  genre: genre,
-		    	url: url,
-          points: 0
+		      url: url,
+              duration: duration,
+              points: 0
 	      };
-		    var new_song = new Song(new_song_data);
-        new_song.save(function(err) {
+		  var new_song = new Song(new_song_data);
+          new_song.save(function(err) {
           if (err) console.log("couldn't save new song");
         });
       }

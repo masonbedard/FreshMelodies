@@ -34,9 +34,8 @@ model.progress_value_to_seconds = function(progress_value) {
   return progress_value * model.entries[model.playing_id].duration / .91;
 };
 
-model.calculate_progress = function(duration) {
-  model.entries[model.playing_id].duration = duration;
-  var num_of_ticks_bar_must_represent = duration * 2;
+model.calculate_progress = function() {
+  var num_of_ticks_bar_must_represent = model.entries[model.playing_id].duration * 2;
   model.entries[model.playing_id].value_per_tick = .91 / num_of_ticks_bar_must_represent;
   //model.entries[model.playing_id].value_per_tick = .91/duration;
   model.track_progress();
@@ -45,25 +44,28 @@ model.calculate_progress = function(duration) {
 model.track_progress = function() {
   setTimeout(function() {
       if (model.playing_id) {
-          if (!model.progress_clicked) {
-            var id = model.playing_id;
-            model.entries[id].progress_value += model.entries[id].value_per_tick;
-            $('#'+id+" .controlcontainer .progresscontainer input").simpleSlider("setValue", model.entries[id].progress_value);
-          }
-          model.track_progress();
+        console.log('getting in here');
+        if (!model.progress_clicked) {
+          console.log('getting in here');
+          var id = model.playing_id;
+          model.entries[id].progress_value += model.entries[id].value_per_tick;
+          $('#'+id+" .controlcontainer .progresscontainer input").simpleSlider("setValue", model.entries[id].progress_value);
+        }
+        console.log('tracking');
+        model.track_progress();
       }
   },500);
 };
 
 model.enableSliders = function(id) {
   $('#'+id+' .controlcontainer .progresscontainer input').simpleSlider();
-  $('#'+id+' .controlcontainer .progresscontainer .slider').css('width', '200');
+  $('#'+id+' .controlcontainer .progresscontainer .slider').addClass('slider2');
   $('#'+id+' .controlcontainer .progresscontainer input').bind("slider:changed", function(event, data) {
     var clickedId = $(this).parent().parent().parent().attr('id');
     model.entries[clickedId].progress_value = data.value;
     if (model.progress_clicked && model.playing_id === clickedId) {
-        var seconds = model.progress_value_to_seconds(model.entries[clickedId].progress_value);
-        model.seekTo(id, seconds);
+      var seconds = model.progress_value_to_seconds(model.entries[clickedId].progress_value);
+      model.seekTo(id, seconds);
     }
   });
 
@@ -96,7 +98,8 @@ model.createEntries = function(data) {
       entry.player = CreatePlayer(data[i]._id, data[i].url);
       entry.playing = false;
       entry.progress_value = 0;
-      entry.duration = 0;
+      entry.duration = data[i].duration;
+      console.log('duration' + entry.duration);
       model.entries[data[i]._id] = entry;
     }
   }
@@ -116,7 +119,7 @@ model.submit_song = function() {
   } else if (song.artist === undefined || song.artist === "") {
     $("#submit_message").removeClass('valid').addClass('invalid').text('invalid artist');
   } else if (song.genre === undefined || song.genre === '') {
-    $("#submit_message").removeClass('valid').addClass('invalid').text('invalid');
+    $("#submit_message").removeClass('valid').addClass('invalid').text('invalid genre');
   } else if (song.url === undefined || song.url === "") {
     $("#submit_message").removeClass('valid').addClass('invalid').text('invalid url');
   } else {

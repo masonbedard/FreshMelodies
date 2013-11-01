@@ -32,19 +32,21 @@ var connect = function(socket) {
 			});
 		}
 	});
-	socket.on('submit', function(data) {
-		var url = new String(data.url);
 
-		if (url.indexOf("youtube.com") != -1) {
-			youtubeHandler(data, url, socket);
-		}
-    else if (url.indexOf("soundcloud.com") != -1) {
-      soundcloudHandler(data,url, socket);
-    }
-		else {
-      socket.emit('submit result', {result: false, message:"not a youtube or soundcloud video not a youtube or soundcloud video"});
-		}
+	socket.on('submit', function(data) {
+      var url = new String(data.url);
+
+	  if (url.indexOf("youtube.com") != -1) {
+		youtubeHandler(data, url, socket);
+	  }
+      else if (url.indexOf("soundcloud.com") != -1) {
+        soundcloudHandler(data,url, socket);
+      }
+	  else {
+        socket.emit('submit result', {result: false, message:"not a youtube or soundcloud video"});
+      }
 	});
+
 	socket.on('add listen', function(data) {
 		Song.addListen(data._id);
 	});
@@ -57,11 +59,14 @@ function soundcloudHandler(data,url,socket) {
         var tid = JSON.parse(body).id;
         request('http://api.soundcloud.com/tracks/'+
           tid+'.json?client_id=1d59b5b795afd9b4e2ffc7144715bd05', function(error,response,body) {
-        if (error != 'null') {
-          var playback_count = JSON.parse(body).playback_count;
+          if (error != 'null') {
+            var bodyJson = JSON.parse(body);
+            var playback_count = bodyJson.playback_count;
+            var duration = bodyJson.duration / 1000;
+            console.log('duration' + duration);
           if (playback_count < 5000) {
-            Song.insertOrUpdate(data.name, data.artist, data.genre, data.url);
             socket.emit('submit result', {result:true});
+            Song.insertOrUpdate(data.name, data.artist, data.genre, data.url, parseInt(duration));
           } else {
             socket.emit('submit result', {result:false, message:"too many listens"});
           }
@@ -80,18 +85,21 @@ function youtubeHandler(data,url,socket) {
 	var vid = youtubeLinkParser(url);
 	youtube.video(vid).details(function(err, details) {
 		if (err === null) {
-			console.log(details.viewCount);
-			if (details.viewCount < 10000) {
-        console.log('submit')
-			  Song.insertOrUpdate(data.name, data.artist, data.genre, data.url);
-        socket.emit('submit result', {result:true});
-			} else {
-        console.log('too many views');
-        socket.emit('submit result', {result:false, message:"too many views"});
-      }
+          console.log(details);
+	      console.log(details.viewCount);
+          console.log(details.duration);
+		  if (details.viewCount < 10000) {
+            console.log('submit')
+            socket.emit('submit result', {result:true});
+    // GET DURATION SO I CAN INSERT IT
+		    Song.insertOrUpdate(data.name, data.artist, data.genre, data.url, parseInt(details.duration));
+	      } else {
+            console.log('too many views');
+            socket.emit('submit result', {result:false, message:"too many views"});
+          }
 		} else {
-      socket.emit('submit result', {result:false, message:"invalid video"});
-    }
+          socket.emit('submit result', {result:false, message:"invalid video"});
+        }
 	});
 }
 
