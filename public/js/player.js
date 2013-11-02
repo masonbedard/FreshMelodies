@@ -45,11 +45,6 @@
       this.player.pauseVideo();
     }
   };
-  YTPlayer.prototype.rewind = function () {
-    if (this.player) {
-      this.player.seekTo(0, false);
-    }
-  };
   YTPlayer.prototype.setVolume = function (volume) {
     if (this.player) {
         this.player.setVolume(volume);
@@ -74,29 +69,38 @@
     $(div).append("<iframe class='scplayer' id='scp"+
       this.id+"' src='http://w.soundcloud.com/player/?url="+
       this.url+"&show_artwork=false&liking=false&sharing=false"+
-      "&auto_play=true' frameborder='no'></iframe>");
+      "frameborder='no'></iframe>");
     var playerId = 'scp' + this.id;
     this.player = SC.Widget(playerId);
+    var this_player = this.player;
+    this_player.bind(SC.Widget.Events.READY, function() {
+      //this_player.seekTo(model.progress_value_to_seconds(model.entries[model.playing_id].progress_value) * 1000);
+      //this_player.setVolume(model.entries[model.playing_id].curr_volume);
+      this_player.play();
+
+      model.calculate_progress();
+    });
   };
   SCDPlayer.prototype.play = function () {
     if (!this.ready) {
       this.setup();
       this.ready = true;
+      console.log('ready');
     }
-    this.player.play();
-    model.calculate_progress();
+    else {
+        console.log('nope');
+      this.player.play();
+      model.calculate_progress();
+    }
+    console.log('done');
   };
   SCDPlayer.prototype.pause = function () {
     if (this.player) {
       this.player.pause();
     }
   };
-  SCDPlayer.prototype.rewind = function () {
-    if (this.player) {
-      this.player.seekTo(0);
-    }
-  };
   SCDPlayer.prototype.setVolume = function (volume) {
+      console.log('volume settting');
     if (this.player) {
       this.player.setVolume(volume);
     }
@@ -118,12 +122,12 @@
   NullPlayer.prototype.pause = function () {
     console.log("No player available for content.");
   };
-  NullPlayer.prototype.rewind = function () {
-    console.log("No player available for content.");
-  };
   NullPlayer.prototype.setVolume = function (volume) {
     console.log("No player available for content.");
   };
+  NullPlayer.prototype.seekTo = function (seconds) {
+    console.log("No player available for content.");
+  }
   window.NullPlayer = NullPlayer;
 
   window.CreatePlayer = function(id, url) {

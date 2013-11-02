@@ -26,12 +26,6 @@ jq.doc.on('mouseup', '.slider2', function() {
     console.log('mouseup');
   model.progress_clicked = false;
 });
-/*
-jq.doc.on('mousedown', '.track', function() {
-  console.log('mousedown');
-});
-*/
-
 
 jq.doc.on('click', '#submit_button', function() {
   model.submit_song();
