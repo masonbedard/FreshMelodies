@@ -18,27 +18,25 @@ model.check_if_listen_added = function(id) {
 };
 
 model.check_if_url_known = function(url) {
-  if (url.indexOf("youtube.com") != -1) {
-    return true;
-  }
-  else if (url.indexOf("soundcloud.com") != -1) {
-    return true;
-  }
-  else {
-    return false;
-  }
+    var result = true;
+    if (url.indexOf("youtube.com") != -1) {
+        result = false;
+    }
+    if (url.indexOf("soundcloud.com") != -1) {
+        result = false;
+    }
+    return result;
 };
 
+/*
 model.progress_value_to_seconds = function(progress_value) {
   return progress_value * model.entries[model.playing_id].duration / .91;
 };
-
 model.calculate_progress = function() {
   var num_of_ticks_bar_must_represent = model.entries[model.playing_id].duration * 2;
   model.entries[model.playing_id].value_per_tick = .91 / num_of_ticks_bar_must_represent;
   model.track_progress();
 };
-
 model.track_progress = function() {
   setTimeout(function() {
       if (model.playing_id) {
@@ -51,7 +49,6 @@ model.track_progress = function() {
       }
   },500);
 };
-
 model.enableSliders = function(id) {
   $('#'+id+' .controlcontainer .progresscontainer input').simpleSlider();
   $('#'+id+' .controlcontainer .progresscontainer .slider').addClass('slider2');
@@ -76,28 +73,32 @@ model.enableSliders = function(id) {
     }
   });
 };
+*/
 
 model.createEntries = function(data) {
   for (var i=0;i<data.length;i++) {
     if (!model.entries[data[i]._id]) {
 
-      var known = model.check_if_url_known(data[i].url); 
+      var unknownSource = model.check_if_url_known(data[i].url); 
+      console.log(unknownSource);
       view.display_entries(data[i]._id, data[i].name, data[i].artist, 
-        data[i].genre, data[i].url, known);
+        data[i].genre, data[i].url, unknownSource);
+      /*
       if (known) {
         model.enableSliders(data[i]._id);
       }
+      */
 
       var entry = {};
       entry.name = data[i].name;
       entry.artist = data[i].artist;
       entry.url = data[i].url;
-      entry.player = CreatePlayer(data[i]._id, data[i].url);
-      entry.playing = false;
-      entry.progress_value = 0;
-      entry.duration = data[i].duration;
-      entry.curr_volume = 100;
-      console.log('duration' + entry.duration);
+      //entry.player = CreatePlayer(data[i]._id, data[i].url);
+      //entry.playing = false;
+      //entry.progress_value = 0;
+      //entry.duration = data[i].duration;
+      //entry.curr_volume = 100;
+      //console.log('duration' + entry.duration);
       model.entries[data[i]._id] = entry;
     }
   }
@@ -108,6 +109,7 @@ model.createEntries = function(data) {
 
 model.submit_song = function() {
   var song = {};
+  // MAKE THESE NOT IDS
   song.name = $("#name").val();
   song.artist = $("#artist").val();
   song.url = $("#url").val();
@@ -176,11 +178,11 @@ model.filter = function() {
   comm.socket.emit('load songs',{'genre':model.genre, num:model.num});
 };
 
+/*
 model.setVolume = function(id, volume) {
   var entry = model.entries[id];
   entry.player.setVolume(volume);
 };
-
 model.playSong = function(id) {
   if (model.playing_id != undefined) { // song playing, stop it
     model.pauseSong(model.playing_id);
@@ -192,7 +194,6 @@ model.playSong = function(id) {
     .addClass("icon-pause").addClass("pause");
   model.check_if_listen_added(id);
 };
-
 model.pauseSong = function(id) {
   var entry = model.entries[id];
   if (entry.playing) {
@@ -203,10 +204,10 @@ model.pauseSong = function(id) {
     entry.playing = false;
   }
 };
-
 model.seekTo = function(id, seconds) {
   var entry = model.entries[id];
   entry.player.seekTo(seconds);
 };
+*/
 
 

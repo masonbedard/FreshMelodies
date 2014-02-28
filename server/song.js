@@ -29,7 +29,7 @@ songSchema.statics.findByGenreAfterNum = function(genre, num, cb) {
 songSchema.statics.findAllAfterNum = function(num, cb) {
   this.find().sort({'date_added':-1})
       .where('points').lt(10)
-      .where('date_added').gt(Date.now() - 7*24*60*60*1000)
+      //.where('date_added').gt(Date.now() - 7*24*60*60*1000)
       .skip(num)
       .limit(20)
       .exec(cb);

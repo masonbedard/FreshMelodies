@@ -6,13 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
         <link href="css/simple-slider.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="js/jquery.nicescroll.js"></script>
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
         <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <script src="js/spin.js"></script>
-        <script src="js/player.js"></script>
-        <script src='js/simple-slider.js'></script>
         <script>
         var availableTags = [
             "Alternative",
@@ -44,66 +42,87 @@
       </script>
   </head>
   <body>
-  <div id='mediacontainer'></div>
-  <div class='container'>
-    <div id="wrapper">
-      <div id='title' class='col'>fresh melodies</div>
-      <br/>
-      <div id="songsContainer" class="col"></div>
-      <div id="loading-spinner"/>
-    </div>​
-    <nav id="bt-menu" class="bt-menu">
-      <div class="bt-form">
-        <div class="bt-field">
-          <label for="g_complete">genre </label>
-          <input id="g_complete" />
+
+    <div class='mainContainer'>
+        <div id='title'>fresh melodies</div>
+        <br/>
+        <div id="songsContainer"></div>
+        <div id="loading-spinner"/>
+    </div>
+
+    <div id='entryTemplate' class='entry'>
+        <div>
+            <span class='fieldLeft'></span>
+            <span class='fieldRight listen'>listen</a>
         </div>
+        <div>
+            <span class='fieldLeft'></span>
+            <span class='fieldRight like'>like</span>
+        </div>
+        <div>
+            <span class='fieldLeft'></span>
+            <a class="fieldRight">source</span>
+        </div>
+    </div>
+
+    <nav id="bt-menu" class="bt-menu">
+
+      <div class="bt-form">
+
+        <div class="bt-field">
+          <input id="g_complete" class='untouched' value="genre"/>
+        </div>
+
         <div class="bt-button">
           <button id="filter_button" class="btn btn-6 btn-6a" type="button">filter</button>
         </div>
+
         <br>
         <br>
+
         <div class="bt-text">
-          <h2 id="sub_text">submit new song</h2>
+          <h2>submit new song</h2>
         </div>
+
         <div class="bt-field">
-          <label for="name">name </label>
-          <input id="name" class="sub_form"/>
+          <input id="name" class="untouched" value="title"/>
         </div>
+
         <div class="bt-field">
-          <label for="artist">artist </label>
-          <input id="artist" class="sub_form"/>
+          <input id="artist" class="untouched" value="artist"/>
         </div>
+
         <div class="bt-field">
-          <label for="genre">genre </label>
-          <input id="genre" class="sub_form"/>
+          <input id="genre" class="untouched" value="genre"/>
         </div>
+
         <div class="bt-field">
-          <label for="url">url </label>
-          <input id="url" class="sub_form"/>
+          <input id="url" class="untouched" value="url"/>
         </div>
+
         <div class="bt-button">
           <button id="submit_button" class="btn btn-6 btn-6a" type="button">submit</button>
         </div>
+
         <div id="submit_message"></div>
+
       </div>
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
     </nav>
-  </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var jq = {};
     jq.doc = $(document);
     jq.songsContainer = $('#songsContainer');
   </script>
-  <script src="js/youtubeapi.js"></script>
-  <script src="https://w.soundcloud.com/player/api.js"></script>
   <script src='js/model.js'></script>
   <script src='js/view.js'></script>
   <script src='js/event_handlers.js'></script>
   <script src="js/comm.js"></script>
   <script src="js/classie.js"></script>
   <script src="js/borderMenu.js"></script>
+
   </body>
 </html>
 
