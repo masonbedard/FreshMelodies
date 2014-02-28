@@ -9,7 +9,6 @@ var songSchema = new Schema({
   artist: String,
   genre: String,
   url: String,
-  duration: Number,
   points: { type: Number, default: 0 },
   date_added: { type: Date, default: Date.now },
 });

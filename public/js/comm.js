@@ -1,17 +1,23 @@
-var comm = {};
-comm.socket = io.connect(window.location.href);
+define(['socket.io', 'classie'], function(io, classie) {
+  var socket = io.connect(window.location.href),
+      target = document.getElementById('loading-spinner');
 
-comm.socket.emit('load songs',{'genre':model.genre, 'num':model.num});
-$("#loading-spinner").addClass("loading-spinner-visible");
+  socket.emit('load songs',{'genre':'all', 'num':20});
 
-comm.socket.on('no more songs', function() {
-  model.more_songs = false;
-});
+  socket.on('no more songs', function() {
+    console.log('no more');
+    classie.removeClass(target, "loading-spinner-visible");
+    //model.more_songs = false;
+  });
 
-comm.socket.on('more songs', function(data) {
-  model.createEntries(data);
-});
+  socket.on('more songs', function(data) {
+    console.log(data);
+    classie.removeClass(target, "loading-spinner-visible");
+    //model.createEntries(data);
+  });
 
-comm.socket.on("submit result", function(data) {
-  model.submission_results(data);
+  socket.on("submit result", function(data) {
+    console.log(data)
+    //model.submission_results(data);
+  });
 });

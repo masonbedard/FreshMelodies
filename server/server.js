@@ -20,7 +20,7 @@ var server = http.createServer(app);
 
 var cio = require('socket.io').listen(server);
 
-server.listen(8888);
+server.listen(10000);
 
 sockets.init(cio);
 

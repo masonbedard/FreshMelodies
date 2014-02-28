@@ -1,14 +1,11 @@
 var model = {};
 
+model.songs = {};
+
 model.loading = true;
-model.genre = 'all';
 model.more_songs = true;
-model.progress_clicked = false;
-
+model.genre = 'all';
 model.num = 0;
-model.playing_id = undefined;
-
-model.entries = {};
 
 model.check_if_listen_added = function(id) {
   if (localStorage.getItem(id) == undefined) {
@@ -29,75 +26,18 @@ model.check_if_url_known = function(url) {
   }
 };
 
-model.progress_value_to_seconds = function(progress_value) {
-  return progress_value * model.entries[model.playing_id].duration / .91;
-};
-
-model.calculate_progress = function() {
-  var num_of_ticks_bar_must_represent = model.entries[model.playing_id].duration * 2;
-  model.entries[model.playing_id].value_per_tick = .91 / num_of_ticks_bar_must_represent;
-  model.track_progress();
-};
-
-model.track_progress = function() {
-  setTimeout(function() {
-      if (model.playing_id) {
-        if (!model.progress_clicked) {
-          var id = model.playing_id;
-          model.entries[id].progress_value += model.entries[id].value_per_tick;
-          $('#'+id+" .controlcontainer .progresscontainer input").simpleSlider("setValue", model.entries[id].progress_value);
-        }
-        model.track_progress();
-      }
-  },500);
-};
-
-model.enableSliders = function(id) {
-  $('#'+id+' .controlcontainer .progresscontainer input').simpleSlider();
-  $('#'+id+' .controlcontainer .progresscontainer .slider').addClass('slider2');
-  $('#'+id+' .controlcontainer .progresscontainer input').bind("slider:changed", function(event, data) {
-    var clickedId = $(this).parent().parent().parent().attr('id');
-    model.entries[clickedId].progress_value = data.value;
-    if (model.progress_clicked && model.playing_id === clickedId) {
-      var seconds = model.progress_value_to_seconds(model.entries[clickedId].progress_value);
-      model.seekTo(id, seconds);
-    }
-  });
-
-  $('#'+id+' .volumecontainer input').simpleSlider();
-  $('#'+id+' .volumecontainer input').simpleSlider('setValue', '.82');
-  $('#'+id+' .volumecontainer input').bind("slider:changed", function (event, data) {
-    var clickedId = $(this).parent().parent().attr('id');
-    if (model.entries[clickedId].curr_volume != data.value * 10000 / 82) {
-        console.log('happening');
-      model.entries[clickedId].curr_volume = data.value * 10000 / 82;
-      console.log(model.entries[clickedId].curr_volume);
-      model.setVolume(clickedId, data.value * 10000 / 82);
-    }
-  });
-};
-
 model.createEntries = function(data) {
   for (var i=0;i<data.length;i++) {
-    if (!model.entries[data[i]._id]) {
+    if (!model.songs[data[i]._id]) {
 
       var known = model.check_if_url_known(data[i].url); 
       view.display_entries(data[i]._id, data[i].name, data[i].artist, 
         data[i].genre, data[i].url, known);
-      if (known) {
-        model.enableSliders(data[i]._id);
-      }
 
       var entry = {};
       entry.name = data[i].name;
       entry.artist = data[i].artist;
       entry.url = data[i].url;
-      entry.player = CreatePlayer(data[i]._id, data[i].url);
-      entry.playing = false;
-      entry.progress_value = 0;
-      entry.duration = data[i].duration;
-      entry.curr_volume = 100;
-      console.log('duration' + entry.duration);
       model.entries[data[i]._id] = entry;
     }
   }
@@ -176,37 +116,9 @@ model.filter = function() {
   comm.socket.emit('load songs',{'genre':model.genre, num:model.num});
 };
 
-model.setVolume = function(id, volume) {
-  var entry = model.entries[id];
-  entry.player.setVolume(volume);
-};
-
 model.playSong = function(id) {
-  if (model.playing_id != undefined) { // song playing, stop it
-    model.pauseSong(model.playing_id);
-  }
-  model.playing_id = id;
-  model.entries[id].playing = true;
-  model.entries[id].player.play();
-  $("#" + id + " .play").removeClass("icon-play").removeClass("play")
-    .addClass("icon-pause").addClass("pause");
+  var song = model.songs[id];
+
+  SCM.play({title:song.name, url:song.url});
   model.check_if_listen_added(id);
 };
-
-model.pauseSong = function(id) {
-  var entry = model.entries[id];
-  if (entry.playing) {
-    entry.player.pause();
-    model.playing_id = undefined;
-    $("#" + id + " .pause").removeClass("icon-pause").removeClass("pause")
-      .addClass("icon-play").addClass("play");
-    entry.playing = false;
-  }
-};
-
-model.seekTo = function(id, seconds) {
-  var entry = model.entries[id];
-  entry.player.seekTo(seconds);
-};
-
-

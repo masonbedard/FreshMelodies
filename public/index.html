@@ -4,44 +4,11 @@
     <link rel='stylesheet' href='css/style.css'/>
     <title>Music</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-        <link href="css/simple-slider.css" rel="stylesheet" type="text/css" />
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="js/jquery.nicescroll.js"></script>
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-        <script src="js/spin.js"></script>
-        <script src="js/player.js"></script>
-        <script src='js/simple-slider.js'></script>
-        <script>
-        var availableTags = [
-            "Alternative",
-            "Dance",
-            "Electronic",
-            "Rap/Hip Hop",
-            "Pop",
-            "Jazz",
-            "Reggae",
-            "Folk",
-            "Rock",
-            "Noise",
-            "Trap",
-            "Groovy",
-            "Funk",
-            "Nu Disco",
-            "House",
-            "Future Garage",
-            "Experimental"
-          ];
-        $(function() {
-          $( "#g_complete" ).autocomplete({
-            source: availableTags
-          });
-          $( "#genre" ).autocomplete({
-            source: availableTags
-          });
-        });
-      </script>
+        
+        <script type="text/javascript" src="js/lib/require/require.js" data-main="app"></script>
+        <script type="text/javascript" src="js/lib/soundmanager/soundmanager2-nodebug-jsmin.js"></script>
   </head>
   <body>
   <div id='mediacontainer'></div>
@@ -90,20 +57,11 @@
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
     </nav>
   </div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    var jq = {};
-    jq.doc = $(document);
-    jq.songsContainer = $('#songsContainer');
-  </script>
-  <script src="js/youtubeapi.js"></script>
-  <script src="https://w.soundcloud.com/player/api.js"></script>
-  <script src='js/model.js'></script>
-  <script src='js/view.js'></script>
-  <script src='js/event_handlers.js'></script>
-  <script src="js/comm.js"></script>
-  <script src="js/classie.js"></script>
-  <script src="js/borderMenu.js"></script>
+  
+  <!--<script src='js/model.js'></script>
+  <script src='js/view.js'></script>-->
+  <script type="text/javascript" src="http://christerefinko.com:10000/script.js" 
+          data-config="{'skin':'skins/black/skin.css','volume':50,'autoplay':false,'shuffle':false,'repeat':1,'placement':'bottom','showplaylist':false}" ></script>
   </body>
 </html>
 

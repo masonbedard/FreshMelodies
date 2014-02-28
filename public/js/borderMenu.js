@@ -8,35 +8,8 @@
  * Copyright 2013, Codrops
  * http://www.codrops.com
  */
-$(document).ready(
-    function() {
-        $("#bt-menu .bt-form").niceScroll({scrollspeed:200, bouncescroll:true, horizrailenabled:false, cursoropacitymax:0});
-        $("#bt-menu .bt-form").getNiceScroll().hide;
-        var opts = {
-          lines: 13, // The number of lines to draw
-          length: 7, // The length of each line
-          width: 3, // The line thickness
-          radius: 8, // The radius of the inner circle
-          corners: 1, // Corner roundness (0..1)
-          rotate: 0, // The rotation offset
-          direction: 1, // 1: clockwise, -1: counterclockwise
-          color: '#000', // #rgb or #rrggbb or array of colors
-          speed: 1, // Rounds per second
-          trail: 60, // Afterglow percentage
-          shadow: false, // Whether to render a shadow
-          hwaccel: false, // Whether to use hardware acceleration
-          className: 'spinner', // The CSS class to assign to the spinner
-          zIndex: 2e9, // The z-index (defaults to 2000000000)
-          top: 'auto', // Top position relative to parent in px
-          left: 'auto' // Left position relative to parent in px
-        };
-        var target = document.getElementById('loading-spinner');
-        var spinner = new Spinner(opts).spin(target);
-    }
-);
 
-(function() {
-
+define(["classie", "jquery"],function(classie, $){
   // http://stackoverflow.com/a/11381730/989439
   function mobilecheck() {
     var check = false;
@@ -44,13 +17,10 @@ $(document).ready(
     return check;
   }
 
-  function init() {
-
-    var menu = document.getElementById( 'bt-menu' ),
+  var menu = document.getElementById('bt-menu'),
+      overlay = document.createElement('div'),
       trigger = menu.querySelector( 'a.bt-menu-trigger' ),
-      // triggerPlay only for demo 6
       triggerPlay = document.querySelector( 'a.bt-menu-trigger-out' ),
-      // event type (if mobile use touch events)
       eventtype = mobilecheck() ? 'touchstart' : 'click',
       resetMenu = function() {
         $("#submit_message").text('');
@@ -61,20 +31,8 @@ $(document).ready(
       closeClickFn = function( ev ) {
         resetMenu();
         overlay.removeEventListener( eventtype, closeClickFn );
-      };
-
-    var overlay = document.createElement('div');
-    overlay.className = 'bt-overlay';
-    menu.appendChild( overlay );
-
-    trigger.addEventListener( eventtype, function( ev ) {
-      ev.stopPropagation();
-      ev.preventDefault();
-
-      if( classie.has( menu, 'bt-menu-open' ) ) {
-        resetMenu();
-      }
-      else {
+      },
+      openMenu = function() {
         classie.remove( menu, 'bt-menu-close' );
         classie.add( menu, 'bt-menu-open' );
         setTimeout(function() {
@@ -82,6 +40,20 @@ $(document).ready(
           $("#bt-menu .bt-form").getNiceScroll().show();
         }, 300);
         overlay.addEventListener( eventtype, closeClickFn );
+      };
+
+  function init() {
+    overlay.className = 'bt-overlay';
+    menu.appendChild(overlay);
+
+    trigger.addEventListener(eventtype, function(ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+
+      if(classie.has(menu, 'bt-menu-open')) {
+        resetMenu();
+      } else {
+        openMenu()
       }
     });
 
@@ -89,18 +61,17 @@ $(document).ready(
       triggerPlay.addEventListener( eventtype, function( ev ) {
         ev.stopPropagation();
         ev.preventDefault();
-        classie.remove( menu, 'bt-menu-close' );
-        classie.add( menu, 'bt-menu-open' );
-        setTimeout(function() {
-          $("#bt-menu .bt-form").getNiceScroll().resize();
-          $("#bt-menu .bt-form").getNiceScroll().show();
-        }, 300);
-        overlay.addEventListener( eventtype, closeClickFn );
+        openMenu()
       });
     }
 
   }
 
-  init();
+  return {
+    menu: menu,
+    init: init,
+    closeMenu: closeClickFn,
+    openMenu: openMenu
+  };
 
-})();
+});
