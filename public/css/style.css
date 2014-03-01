@@ -6,73 +6,88 @@
   box-sizing: border-box;
 }
 html {
-  font-family: helvetica;
-  background-color:#E46C62;
-  font-weight:lighter;
+    font-family: helvetica;
+    background-color:#E46C62;
+    font-weight:lighter;
+}
+body {
+    background-color:#E46C62;
 }
 
-.url {
+.mainContainer {
+    padding-top: 40px;
+    max-width: 600px;
+    margin:auto;
+}
+
+#title {
+  text-align:center;
+  font-size: 50px;
+  color:#ffffff;
+  background-color:#333;
+  margin:auto;
+}
+
+.entry {
+    background-color:#E4E7EC;
+    padding: 5px;
+    font-size: 28px;
+    color:#333;
+}
+.fieldRight {
     float:right;
-    margin-right:5px;
+}
+span.fieldRight {
+    cursor: pointer;
+}
+
+#entryTemplate {
+    display:none;
+}
+
+a {
     text-decoration:none;
-    font-size:28px;
     color:#2a5db0;
 }
 a:visited {
     color:#2a5db0;
 }
 
-
-.container {
-  background-color:#E46C62
+.untouched {
+    color:#c0c0c0;
 }
 
-#mediacontainer {
-  display:none;
-}
-
-
-body  {
-  background-color:#E46C62;
-}
-
-.field {
-  font-size: 28px;
-  margin-left: 5px;
-  color:#333;
-}
-
+/*
 .control {
   font-size: 28px;
   margin-left:10px;
   color:#333;
   cursor:pointer;
 }
-
-
 .controlcontainer {
   float:right;
   margin-right:5px;
 }
-
 .playcontainer {
   float:left;
   margin-right:5px;
   margin-top:3px;
 }
-
 .progresscontainer {
   float:right;
 }
-
-
 .volumecontainer {
   float:right;
   margin-right:5px;
 }
+*/
 
+label {
+    float: left;
+}
 input {
-  outline:none;
+    outline:none;
+    width: 100%;
 }
 
 .inactive {
@@ -93,38 +108,14 @@ input {
   cursor: pointer;
 }
 
+/*
 .mediaplayer {
   display:inline;
   float:right;
   height: 95%;
   margin-right:5px;
 }
-
-
-#title {
-  text-align:center;
-  font-size: 50px;
-  color:#E4E7EC;
-  background-color:#333;
-  margin:auto;
-}
-
-.container {
-  padding-left: 80px;
-  padding-top: 80px;
-  padding-right: 80px;
-}
-
-#wrapper {
-  width:60%;
-  min-width:600px;
-  margin:auto;
-}
-
-.entry {
-  background-color:#E4E7EC;
-}
-
+*/
 
 .bt-menu {
   position: fixed;
@@ -242,6 +233,15 @@ input {
   width: 100%;
 }
 
+.bt-text h2 {
+    font-size: 20px;
+    font-weight: lighter;
+}
+
+.bt-field input {
+    font-size: 15px;
+}
+
 .bt-menu .bt-field,
 .bt-menu .bt-button,
 .bt-menu .bt-text {
@@ -347,14 +347,6 @@ input {
 .btn-6a:hover {
   background: transparent;
   color: #E46C62;
-}
-
-#sub_text {
-  font-size: 20px;
-}
-
-.sub_form {
-  font-size:15px;
 }
 
 #loading-spinner {

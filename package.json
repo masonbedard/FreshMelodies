@@ -1,0 +1,13 @@
+{
+    "name": "freshmelodies",
+    "version": "0.0.0",
+    "description": "freshmelodies",
+    "dependencies": {
+        "connect": "latest",
+        "express": "latest",
+        "mongoose": "latest",
+        "request": "latest",
+        "socket.io": "latest",
+        "youtube-feeds": "latest"
+    }
+}

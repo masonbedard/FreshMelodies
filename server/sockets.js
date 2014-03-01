@@ -66,7 +66,7 @@ function soundcloudHandler(data,url,socket) {
             console.log('duration' + duration);
           if (playback_count < 5000) {
             socket.emit('submit result', {result:true});
-            Song.insertOrUpdate(data.name, data.artist, data.genre, data.url, parseInt(duration));
+            Song.insertOrUpdate(data.name, data.artist, data.genre, data.url);
           } else {
             socket.emit('submit result', {result:false, message:"too many listens"});
           }
@@ -85,21 +85,20 @@ function youtubeHandler(data,url,socket) {
 	var vid = youtubeLinkParser(url);
 	youtube.video(vid).details(function(err, details) {
 		if (err === null) {
-          console.log(details);
-	      console.log(details.viewCount);
-          console.log(details.duration);
-		  if (details.viewCount < 10000) {
-            console.log('submit')
-            socket.emit('submit result', {result:true});
-    // GET DURATION SO I CAN INSERT IT
-		    Song.insertOrUpdate(data.name, data.artist, data.genre, data.url, parseInt(details.duration));
-	      } else {
-            console.log('too many views');
-            socket.emit('submit result', {result:false, message:"too many views"});
-          }
+      console.log(details);
+	    console.log(details.viewCount);
+      console.log(details.duration);
+		  if (/*details.viewCount < 10000*/true) {
+        console.log('submit')
+        socket.emit('submit result', {result:true});
+		    Song.insertOrUpdate(data.name, data.artist, data.genre, data.url);
+	    } else {
+        console.log('too many views');
+        socket.emit('submit result', {result:false, message:"too many views"});
+      }
 		} else {
-          socket.emit('submit result', {result:false, message:"invalid video"});
-        }
+      socket.emit('submit result', {result:false, message:"invalid video"});
+    }
 	});
 }
 

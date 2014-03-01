@@ -28,7 +28,7 @@ songSchema.statics.findByGenreAfterNum = function(genre, num, cb) {
 songSchema.statics.findAllAfterNum = function(num, cb) {
   this.find().sort({'date_added':-1})
       .where('points').lt(10)
-      .where('date_added').gt(Date.now() - 7*24*60*60*1000)
+      //.where('date_added').gt(Date.now() - 7*24*60*60*1000)
       .skip(num)
       .limit(20)
       .exec(cb);
@@ -49,7 +49,7 @@ songSchema.statics.addListen = function(_id) {
   });
 }
 
-songSchema.statics.insertOrUpdate = function(name, artist, genre, url, duration) {
+songSchema.statics.insertOrUpdate = function(name, artist, genre, url) {
   this.find({name:name, artist:artist}, function(err, results) {
 
 	if (err) {
@@ -63,16 +63,17 @@ songSchema.statics.insertOrUpdate = function(name, artist, genre, url, duration)
         });
       } else { // insert
 		    var new_song_data = {
+          _id: mongoose.Types.ObjectId(),
 		  	  name: name,
 		  	  artist: artist,
 		  	  genre: genre,
 		      url: url,
-              duration: duration,
-              points: 0
+          points: 0,
+          date_added: Date.now()
 	      };
 		  var new_song = new Song(new_song_data);
           new_song.save(function(err) {
-          if (err) console.log("couldn't save new song");
+          if (err) console.log(err);
         });
       }
     }
@@ -80,5 +81,3 @@ songSchema.statics.insertOrUpdate = function(name, artist, genre, url, duration)
 }
 
 var Song = module.exports = mongoose.model('Song', songSchema);
-
-

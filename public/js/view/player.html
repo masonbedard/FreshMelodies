@@ -32,9 +32,7 @@
 			style:{width:(loadedFraction()*100)+'%'}
 			"></div> 
 	</div> 
-	<div class="text" id="tooltip"> 
-		<a href="http://scmplayer.net" target="_blank" >SCM Music Player</a> 
-	</div> 
+	<div class="text" id="tooltip">fresh melodies</div> 
 	<div class="text item" id="timer" data-bind="text:timer"></div> 
 	<div class="item ui-slider-horizontal" data-bind="
 		innerBound:{bound:'.bound',handle:'.ui-slider-handle'}
@@ -43,7 +41,7 @@
 			slider:volume,
 			sliderOptions:{liveUpdate:true},
 			caption:'Volume: '+volume()+'%',
-			captionOptions:{target:'#tooltip a',trigger:'slide'}
+			captionOptions:{target:'#tooltip',trigger:'slide'}
 			">
 		<div class="ui-slider-handle" id="volumeSlider"></div> 
 		</div>
@@ -52,7 +50,7 @@
 		data-bind="maskBtn:{css:'mainImage',align:'right'},
 		click:togglePlaylist,
 		caption:'Toggle Playlist',
-		captionOptions:{target:'#tooltip a',trigger:'hover'}
+		captionOptions:{target:'#tooltip',trigger:'hover'}
 		"></div> 
 	<div class="mainImage" id="baseRight"></div> 
 	<div class="mainImage" id="baseLeft"></div> 

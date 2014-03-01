@@ -1,23 +1,48 @@
-define(['socket.io', 'classie'], function(io, classie) {
+define(['socket.io', 'classie', 'view'], function(io, classie, view) {
   var socket = io.connect(window.location.href),
       target = document.getElementById('loading-spinner');
 
-  socket.emit('load songs',{'genre':'all', 'num':20});
+  var submitSong = function(song) {
+    socket.emit('submit', song);
+  };
 
-  socket.on('no more songs', function() {
-    console.log('no more');
-    classie.removeClass(target, "loading-spinner-visible");
-    //model.more_songs = false;
-  });
+  var loadSongs = function(genre, num) {
+    socket.emit('load songs',{genre:genre, num:num});
+  };
 
-  socket.on('more songs', function(data) {
-    console.log(data);
-    classie.removeClass(target, "loading-spinner-visible");
-    //model.createEntries(data);
-  });
+  var addListen = function(id) {
+    socket.emit('add listen',{'_id':id});
+  };
 
-  socket.on("submit result", function(data) {
+  var init = function(songmanager) {
+    loadSongs('all', 0);
+
+    socket.on('no more songs', function() {
+      console.log('no more');
+      classie.removeClass(target, "loading-spinner-visible");
+      songmanager.more_songs = false;
+    });
+
+    socket.on("submit result", function(data) {
     console.log(data)
-    //model.submission_results(data);
-  });
+      if (data.result) {
+        view.successfulSongSubmission();
+      } else {
+        view.unsuccessfulSongSubmission(data);
+      }
+    });
+
+    socket.on('more songs', function(data) {
+      console.log(data);
+      classie.removeClass(target, "loading-spinner-visible");
+      songmanager.createEntries(data);
+    });
+  };
+
+  return {
+    init: init,
+    submitSong: submitSong,
+    loadSongs: loadSongs,
+    addListen: addListen
+  };
 });
