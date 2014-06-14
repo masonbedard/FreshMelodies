@@ -33,16 +33,13 @@ body {
     padding: 5px;
     font-size: 28px;
     color:#333;
+    margin-top: 20px;
 }
 .fieldRight {
     float:right;
 }
 span.fieldRight {
     cursor: pointer;
-}
-
-#entryTemplate {
-    display:none;
 }
 
 a {
@@ -372,4 +369,21 @@ input {
 
 #submit_message.invalid {
   color: #FF3B15;
+}
+
+.entry.ng-enter {
+  -webkit-transition:0.7s linear all;
+  transition:0.7s linear all;
+}
+
+.entry.ng-enter {
+  opacity:0;
+}
+.entry.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.hidden {
+  visibility: hidden;
+  display: none;
 }

@@ -1,6 +1,9 @@
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost');
+var mongoose = require('mongoose'),
+    logger = require('./logger');
+try {
+  mongoose.connect("mongodb://localhost");
+} catch(err) {
+  logger.err("Unable to connect to MongoDB");
+}
 
-var Song = require('./song');
-
-module.exports.Song = Song;
+module.exports.Song = require('./song');

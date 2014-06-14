@@ -1,89 +1,221 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="freshmelodies">
   <head>
-    <link rel='stylesheet' href='css/style.css'/>
     <title>Music</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-        
-        <script type="text/javascript" src="js/lib/require/require.js" data-main="app"></script>
-        <script type="text/javascript" src="js/lib/soundmanager/soundmanager2-nodebug-jsmin.js"></script>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="/js/classie.js"></script>
+    <script src="/js/bower/angular/angular.min.js"></script>
+    <script src="/js/bower/angular-animate/angular-animate.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      var fm = angular.module("freshmelodies", ['ngAnimate']);
+
+      fm.factory('$socket', function ($rootScope) {
+        var $socket = io.connect();
+        return {
+          on: function (eventName, callback) {
+            $socket.on(eventName, function () {  
+              var args = arguments;
+              $rootScope.$apply(function () {
+                callback.apply($socket, args);
+              });
+            });
+          },
+          emit: function (eventName, data, callback) {
+            $socket.emit(eventName, data, function () {
+              var args = arguments;
+              $rootScope.$apply(function () {
+                if (callback) {
+                  callback.apply($socket, args);
+                }
+              });
+            });
+          }
+        };
+      });
+
+      fm.controller("SubmitCtrl", function($scope, $socket) {
+        $scope.resetInputFields = function() {
+          $scope.nameIn = "name";
+          $scope.artistIn = "artist";
+          $scope.genreIn = "genre";
+          $scope.urlIn = "url";
+        };
+
+        $scope.nameInEnter = function() {
+          if ($scope.nameIn === "name") {
+            $scope.nameIn = "";
+          }
+        };
+        $scope.nameInLeave = function() {
+          if ($scope.nameIn === "") {
+            $scope.nameIn = "name";
+          }
+        };
+        $scope.artistInEnter = function() {
+          if ($scope.artistIn === "artist") {
+            $scope.artistIn = "";
+          }
+        };
+        $scope.artistInLeave = function() {
+          if ($scope.artistIn === "") {
+            $scope.artistIn = "artist";
+          }
+        };
+        $scope.genreInEnter = function() {
+          if ($scope.genreIn === "genre") {
+            $scope.genreIn = "";
+          }
+        };
+        $scope.genreInLeave = function() {
+          if ($scope.genreIn === "") {
+            $scope.genreIn = "genre";
+          }
+        };
+        $scope.urlInEnter = function() {
+          if ($scope.urlIn === "url") {
+            $scope.urlIn = "";
+          }
+        };
+        $scope.urlInLeave = function() {
+          if ($scope.urlIn === "") {
+            $scope.urlIn = "url";
+          }
+        };
+
+        $scope.submitSong = function() {
+          var songData = {
+            name: $scope.nameIn,
+            artist: $scope.artistIn,
+            genre: $scope.genreIn,
+            url: $scope.urlIn
+          };
+          $socket.emit("submit", songData);
+          $scope.resetInputFields();
+        }
+
+        $scope.resetInputFields();
+      });
+
+      fm.controller("SongCtrl", function($scope, $socket) {
+        $scope.songs = [];
+
+        $socket.on("allSongs", function(data) {
+          $scope.songs = data;
+
+          setTimeout(function() {
+            classie.removeClass(target, "loading-spinner-visible");
+            classie.removeClass(document.getElementById("songContainer"), "hidden");
+          }, 500);
+        });
+
+        $socket.on("newSong", function(data) {
+          console.log($scope.songs)
+          $scope.songs.unshift(data);
+          console.log($scope.songs)
+        });
+
+        $socket.on("deleteSong", function(data) {
+          console.log(data);
+          for (var i = 0; i < $scope.songs.length; i++) {
+            if ($scope.songs[i]._id === data._id) {
+              $scope.songs.splice(i, 1);
+              break;
+            }
+          }
+        });
+
+        /*$socket.on('updateSong', function(data) {
+          for (var i = 0; i < $scope.songs.length; i++) {
+            if ($scope.songs[i]._id === data._id) {
+              $scope.songs[i].name = data.name;
+              $scope.songs[i].artist = data.artist;
+              break;
+            }
+          }
+        });*/
+
+        // $scope.removeSong = function(_id) {
+        //   $socket.emit('delete',{_id:_id});
+        // };
+
+        // $scope.updateSong = function(_id) {
+        //   console.log("update");
+        //   for (var i = 0; i < $scope.songs.length; i++) {
+        //     if ($scope.songs[i]._id === _id) {
+        //       $socket.emit('update', $scope.songs[i]);
+        //       break;
+        //     }
+        //   }
+        // };
+      });
+
+    </script>
   </head>
   <body>
-
-    <div class='mainContainer'>
-        <div id='title'>fresh melodies</div>
-        <br/>
-        <div id="songsContainer"></div>
-        <div id="loading-spinner"/>
+    <div class="mainContainer" ng-controller="SongCtrl">
+      <div id="title">fresh melodies</div>
+      <div id="loading-spinner"></div>
+      <div id="songContainer">
+        <div ng-repeat="song in songs" id="{{ song._id }}" class="entry">
+          <div>
+            <span class="fieldLeft">{{ song.name }}</span>
+            <span class="fieldRight listen">listen</span>
+          </div>
+          <div>
+            <span class="fieldLeft">{{ song.artist }}</span>
+            <span class="fieldRight like">like</span>
+          </div>
+          <div>
+            <span class="fieldLeft">{{ song.genre }}</span>
+            <a class="fieldRight source" href="{{ song.url }}">source</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id='entryTemplate' class='entry'>
-        <div>
-            <span class='fieldLeft'></span>
-            <span class='fieldRight listen'>listen</a>
-        </div>
-        <div>
-            <span class='fieldLeft'></span>
-            <span class='fieldRight like'>like</span>
-        </div>
-        <div>
-            <span class='fieldLeft'></span>
-            <a class="fieldRight">source</span>
-        </div>
-    </div>
-
-    <nav id="bt-menu" class="bt-menu">
-
+    <nav id="bt-menu" class="bt-menu" ng-controller="SubmitCtrl">
       <div class="bt-form">
-
         <div class="bt-field">
           <input id="g_complete" class='untouched' value="genre"/>
         </div>
-
         <div class="bt-button">
           <button id="filter_button" class="btn btn-6 btn-6a" type="button">filter</button>
         </div>
-
-        <br>
-        <br>
-
+        <br/>
+        <br/>
         <div class="bt-text">
           <h2>submit new song</h2>
         </div>
-
         <div class="bt-field">
-          <input id="name" class="untouched" value="title"/>
+          <input class="untouched" ng-model="nameIn" ng-mouseenter="nameInEnter()" ng-mouseleave="nameInLeave()"/>
         </div>
-
         <div class="bt-field">
-          <input id="artist" class="untouched" value="artist"/>
+          <input class="untouched" ng-model="artistIn" ng-mouseenter="artistInEnter()" ng-mouseleave="artistInLeave()"/>
         </div>
-
         <div class="bt-field">
-          <input id="genre" class="untouched" value="genre"/>
+          <input class="untouched" ng-model="genreIn" ng-mouseenter="genreInEnter()" ng-mouseleave="genreInLeave()"/>
         </div>
-
         <div class="bt-field">
-          <input id="url" class="untouched" value="url"/>
+          <input class="untouched" ng-model="urlIn" ng-mouseenter="urlInEnter()" ng-mouseleave="urlInLeave()"/>
         </div>
-
         <div class="bt-button">
-          <button id="submit_button" class="btn btn-6 btn-6a" type="button">submit</button>
+          <button class="btn btn-6 btn-6a" type="button" ng-click="submitSong()">submit</button>
         </div>
-
-        <div id="submit_message"></div>
-
+        <div class="submitMessage" ng-model="submitMessage"></div>
       </div>
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
     </nav>
-  </div>
-  
-  <!--<script src='js/model.js'></script>
-  <script src='js/view.js'></script>-->
-  <script type="text/javascript" src="http://christerefinko.com:10000/script.js" 
-          data-config="{'skin':'skins/black/skin.css','volume':50,'autoplay':false,'shuffle':false,'repeat':1,'placement':'bottom','showplaylist':false}" ></script>
+    <script src="/js/spin.js"></script>
+    <script type="text/javascript">
+      var opts = {lines: 13, length: 7, width: 3, radius: 8, corners: 1, rotate: 0, 
+                  direction: 1, color: '#000', speed: 1, trail: 60, shadow: false, hwaccel: false, 
+                  className: 'spinner', zIndex: 2e9, top: 'auto',  left: 'auto'},
+          target = document.getElementById('loading-spinner'),
+          spinner = new Spinner(opts).spin(target);
+          classie.addClass(target, "loading-spinner-visible");
+          classie.addClass(document.getElementById("songContainer"), "hidden");
+    </script>
+    <script src="/js/borderMenu.js"></script>
   </body>
 </html>
-
