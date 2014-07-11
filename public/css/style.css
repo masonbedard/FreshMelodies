@@ -30,7 +30,7 @@ body {
 
 .entry {
     background-color:#E4E7EC;
-    padding: 5px;
+    padding: 22px;
     font-size: 28px;
     color:#333;
     margin-top: 20px;
@@ -49,35 +49,6 @@ a {
 a:visited {
     color:#2a5db0;
 }
-
-.untouched {
-    color:#c0c0c0;
-}
-
-/*
-.control {
-  font-size: 28px;
-  margin-left:10px;
-  color:#333;
-  cursor:pointer;
-}
-.controlcontainer {
-  float:right;
-  margin-right:5px;
-}
-.playcontainer {
-  float:left;
-  margin-right:5px;
-  margin-top:3px;
-}
-.progresscontainer {
-  float:right;
-}
-.volumecontainer {
-  float:right;
-  margin-right:5px;
-}
-*/
 
 label {
     float: left;
@@ -124,17 +95,13 @@ input {
   background-color: rgba(0,0,0,0);
   height: 100%;
   -webkit-backface-visibility: hidden;
-  -webkit-transition: border-width 0.4s;
-  transition: border-width 0.3s, background-color 0.3s, height 0s 0.3s;
+  transition: border-width 0.3s, background-color 0.3s, width 0s 0.3s;
 }
 
 .bt-menu.bt-menu-open {
-  width:100%;
-  height: 100%;
+  width: 100%;
   background-color: rgba(0,0,0,0.3);
   border-width: 0px 0px 0px 300px;
-  -webkit-transition: border-width 0.4s;
-  transition: border-width 0.3s, background-color 0.3s;
 }
 
 .bt-menu-trigger {

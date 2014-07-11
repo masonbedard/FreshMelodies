@@ -4,13 +4,13 @@ var db = require('./db'),
 
 var connect = function(socket) {
   logger.info("New connection from:" + socket);
-  Song.findAll(function (err, results) {
+  Song.findSome(function (err, results) {
     if (err) {
       logger.error("Could not load songs.");
-      socket.emit("allSongs", []);
+      socket.emit("songs", []);
     } else {
       logger.info("Sending songs: " + results);
-      socket.emit("allSongs", results);
+      socket.emit("songs", results);
     }
   });
 
@@ -23,6 +23,16 @@ var connect = function(socket) {
         logger.info("Successful insert, emitting 'newSong'");
         socket.emit("newSong", data);
         socket.broadcast.emit("newSong", data);
+      }
+    });
+  });
+
+  socket.on("loadMoreSongs", function(data) {
+    Song.findSomeAfterSong(data, function(err, results) {
+      if (err) {
+        logger.error("Could not get songs after: " + JSON.stringify(data) + " err: " + err);
+      } else {
+        socket.emit("moreSongs", results);
       }
     });
   });

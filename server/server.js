@@ -99,6 +99,10 @@ StaticServlet.prototype.handleRequest = function(req, res) {
   var path = (conf.PUBLIC_DIR + req.url.pathname).replace('//','/').replace(/%(..)/g, function(match, hex){
     return String.fromCharCode(parseInt(hex, 16));
   });
+  console.log(path);
+  if (path === conf.PUBLIC_DIR) {
+    return self.sendFile_(req, res, conf.PUBLIC_DIR + conf.DEFAULT_PAGE)
+  }
   var parts = path.split('/');
   if (parts[parts.length-1].charAt(0) === '.')
     return self.sendForbidden_(req, res, path);

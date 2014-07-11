@@ -3,22 +3,33 @@
   <head>
     <title>Music</title>
     <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/360player.css"/>
+    <link rel="stylesheet" href="css/360player-visualization.css"/>
+    <script src="/js/bower/jquery/dist/jquery.min.js"></script>
     <script src="/js/classie.js"></script>
     <script src="/js/bower/angular/angular.min.js"></script>
     <script src="/js/bower/angular-animate/angular-animate.min.js"></script>
+    <script src="/js/bower/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/js/soundmanager/soundmanager2.js"></script>
+    <script type="text/javascript" src="/js/soundmanager/berniecode-animator.js"></script>
+    <script type="text/javascript" src="/js/soundmanager/360player.js"></script>
     <script type="text/javascript">
-      var fm = angular.module("freshmelodies", ['ngAnimate']);
+      var fm = angular.module("freshmelodies", ['ngAnimate', 'infinite-scroll']);
 
       fm.factory('$socket', function ($rootScope) {
         var $socket = io.connect();
         return {
-          on: function (eventName, callback) {
+          on: function (eventName, callback, afterApplyCallback) {
             $socket.on(eventName, function () {  
               var args = arguments;
               $rootScope.$apply(function () {
                 callback.apply($socket, args);
               });
+              console.log(eventName)
+              if(typeof afterApplyCallback === 'function'){
+                afterApplyCallback.apply();
+              };
             });
           },
           emit: function (eventName, data, callback) {
@@ -36,51 +47,10 @@
 
       fm.controller("SubmitCtrl", function($scope, $socket) {
         $scope.resetInputFields = function() {
-          $scope.nameIn = "name";
-          $scope.artistIn = "artist";
-          $scope.genreIn = "genre";
-          $scope.urlIn = "url";
-        };
-
-        $scope.nameInEnter = function() {
-          if ($scope.nameIn === "name") {
-            $scope.nameIn = "";
-          }
-        };
-        $scope.nameInLeave = function() {
-          if ($scope.nameIn === "") {
-            $scope.nameIn = "name";
-          }
-        };
-        $scope.artistInEnter = function() {
-          if ($scope.artistIn === "artist") {
-            $scope.artistIn = "";
-          }
-        };
-        $scope.artistInLeave = function() {
-          if ($scope.artistIn === "") {
-            $scope.artistIn = "artist";
-          }
-        };
-        $scope.genreInEnter = function() {
-          if ($scope.genreIn === "genre") {
-            $scope.genreIn = "";
-          }
-        };
-        $scope.genreInLeave = function() {
-          if ($scope.genreIn === "") {
-            $scope.genreIn = "genre";
-          }
-        };
-        $scope.urlInEnter = function() {
-          if ($scope.urlIn === "url") {
-            $scope.urlIn = "";
-          }
-        };
-        $scope.urlInLeave = function() {
-          if ($scope.urlIn === "") {
-            $scope.urlIn = "url";
-          }
+          $scope.nameIn = "";
+          $scope.artistIn = "";
+          $scope.genreIn = "";
+          $scope.urlIn = "";
         };
 
         $scope.submitSong = function() {
@@ -92,31 +62,27 @@
           };
           $socket.emit("submit", songData);
           $scope.resetInputFields();
-        }
-
-        $scope.resetInputFields();
+        };
       });
 
       fm.controller("SongCtrl", function($scope, $socket) {
         $scope.songs = [];
+        $scope.moreSongsAvailable = true;
 
-        $socket.on("allSongs", function(data) {
+        $socket.on("songs", function(data) {
           $scope.songs = data;
 
           setTimeout(function() {
-            classie.removeClass(target, "loading-spinner-visible");
+            classie.removeClass(window.spinner, "loading-spinner-visible");
             classie.removeClass(document.getElementById("songContainer"), "hidden");
           }, 500);
-        });
+        }, threeSixtyPlayer.init);
 
         $socket.on("newSong", function(data) {
-          console.log($scope.songs)
           $scope.songs.unshift(data);
-          console.log($scope.songs)
-        });
+        }, threeSixtyPlayer.init);
 
         $socket.on("deleteSong", function(data) {
-          console.log(data);
           for (var i = 0; i < $scope.songs.length; i++) {
             if ($scope.songs[i]._id === data._id) {
               $scope.songs.splice(i, 1);
@@ -125,38 +91,29 @@
           }
         });
 
-        /*$socket.on('updateSong', function(data) {
-          for (var i = 0; i < $scope.songs.length; i++) {
-            if ($scope.songs[i]._id === data._id) {
-              $scope.songs[i].name = data.name;
-              $scope.songs[i].artist = data.artist;
-              break;
-            }
+        $socket.on("moreSongs", function(data) {
+          if (data.length > 0) {
+            $scope.songs = $scope.songs.concat(data);
+          } else {
+            $scope.moreSongsAvailable = false;
           }
-        });*/
+          classie.removeClass(window.spinner, "loading-spinner-visible");
+        }, threeSixtyPlayer.init);
 
-        // $scope.removeSong = function(_id) {
-        //   $socket.emit('delete',{_id:_id});
-        // };
-
-        // $scope.updateSong = function(_id) {
-        //   console.log("update");
-        //   for (var i = 0; i < $scope.songs.length; i++) {
-        //     if ($scope.songs[i]._id === _id) {
-        //       $socket.emit('update', $scope.songs[i]);
-        //       break;
-        //     }
-        //   }
-        // };
+        $scope.loadMoreSongs = function() {
+          if ($scope.moreSongsAvailable) {
+            var data = $scope.songs[$scope.songs.length-1];
+            $socket.emit("loadMoreSongs", data);
+            classie.addClass(window.spinner, "loading-spinner-visible");
+          }
+        };
       });
-
     </script>
   </head>
   <body>
     <div class="mainContainer" ng-controller="SongCtrl">
       <div id="title">fresh melodies</div>
-      <div id="loading-spinner"></div>
-      <div id="songContainer">
+      <div id="songContainer" infinite-scroll="loadMoreSongs()" infinite-scroll-distance="1" infinite-scroll-immediate-check='false'>
         <div ng-repeat="song in songs" id="{{ song._id }}" class="entry">
           <div>
             <span class="fieldLeft">{{ song.name }}</span>
@@ -168,16 +125,19 @@
           </div>
           <div>
             <span class="fieldLeft">{{ song.genre }}</span>
-            <a class="fieldRight source" href="{{ song.url }}">source</a>
+            <div class="ui360 fieldRight">
+              <a href="{{ song.url }}"></a>
+            </div>
           </div>
         </div>
       </div>
+      <div id="loading-spinner"></div>
     </div>
 
     <nav id="bt-menu" class="bt-menu" ng-controller="SubmitCtrl">
       <div class="bt-form">
         <div class="bt-field">
-          <input id="g_complete" class='untouched' value="genre"/>
+          <input id="g_complete" placeholder="genre"/>
         </div>
         <div class="bt-button">
           <button id="filter_button" class="btn btn-6 btn-6a" type="button">filter</button>
@@ -188,16 +148,16 @@
           <h2>submit new song</h2>
         </div>
         <div class="bt-field">
-          <input class="untouched" ng-model="nameIn" ng-mouseenter="nameInEnter()" ng-mouseleave="nameInLeave()"/>
+          <input ng-model="nameIn" placeholder="name"/>
         </div>
         <div class="bt-field">
-          <input class="untouched" ng-model="artistIn" ng-mouseenter="artistInEnter()" ng-mouseleave="artistInLeave()"/>
+          <input ng-model="artistIn" placeholder="artist"/>
         </div>
         <div class="bt-field">
-          <input class="untouched" ng-model="genreIn" ng-mouseenter="genreInEnter()" ng-mouseleave="genreInLeave()"/>
+          <input ng-model="genreIn" placeholder="genre"/>
         </div>
         <div class="bt-field">
-          <input class="untouched" ng-model="urlIn" ng-mouseenter="urlInEnter()" ng-mouseleave="urlInLeave()"/>
+          <input ng-model="urlIn" placeholder="url"/>
         </div>
         <div class="bt-button">
           <button class="btn btn-6 btn-6a" type="button" ng-click="submitSong()">submit</button>
@@ -210,11 +170,12 @@
     <script type="text/javascript">
       var opts = {lines: 13, length: 7, width: 3, radius: 8, corners: 1, rotate: 0, 
                   direction: 1, color: '#000', speed: 1, trail: 60, shadow: false, hwaccel: false, 
-                  className: 'spinner', zIndex: 2e9, top: 'auto',  left: 'auto'},
-          target = document.getElementById('loading-spinner'),
-          spinner = new Spinner(opts).spin(target);
-          classie.addClass(target, "loading-spinner-visible");
-          classie.addClass(document.getElementById("songContainer"), "hidden");
+                  className: 'spinner', zIndex: 2e9, top: 'auto',  left: 'auto'};
+      window.spinner = document.getElementById('loading-spinner');
+
+      new Spinner(opts).spin(window.spinner);
+      classie.addClass(window.spinner, "loading-spinner-visible");
+      classie.addClass(document.getElementById("songContainer"), "hidden");
     </script>
     <script src="/js/borderMenu.js"></script>
   </body>

@@ -1,6 +1,7 @@
 // The Song model
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    logger = require('./logger');;
 
 var songSchema = new Schema({
   _id: Schema.ObjectId,
@@ -12,9 +13,14 @@ var songSchema = new Schema({
   date_added: { type: Date, default: Date.now },
 });
 
-songSchema.statics.findAll = function(cb) {
-  this.find().sort({date_added:-1}).exec(cb);
-}
+songSchema.statics.findSome = function(cb) {
+  this.find().sort({date_added:-1}).limit(1).exec(cb);
+};
+
+songSchema.statics.findSomeAfterSong = function(data, cb) {
+  logger.info(data.date_added);
+  this.find({date_added:{$lt:data.date_added}}).sort({date_added:-1}).limit(1).exec(cb);
+};
 
 songSchema.statics.insert = function(data, cb) {
   var new_song_data = {
