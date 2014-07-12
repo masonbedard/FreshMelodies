@@ -9,13 +9,13 @@ var connect = function(socket) {
       logger.error("Could not load songs.");
       socket.emit("songs", []);
     } else {
-      logger.info("Sending songs: " + results);
+      logger.info("Sending songs: " + JSON.stringify(results));
       socket.emit("songs", results);
     }
   });
 
   socket.on("submit", function(data) {
-    logger.info("Submit called with data: " + data);
+    logger.info("Submit called with data: " + JSON.stringify(data));
     Song.insert(data, function(err) {
       if (err) {
         logger.error("Error inserting: " + err);

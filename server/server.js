@@ -128,7 +128,7 @@ StaticServlet.prototype.sendError_ = function(req, res, error) {
 };
 
 StaticServlet.prototype.sendMissing_ = function(req, res, path) {
-  path = path.substring(1);
+  path = path.substring(conf.PUBLIC_DIR.length);
   res.writeHead(404, {
       'Content-Type': 'text/html'
   });
@@ -136,9 +136,9 @@ StaticServlet.prototype.sendMissing_ = function(req, res, path) {
   res.write('<title>404 Not Found</title>\n');
   res.write('<h1>Not Found</h1>');
   res.write(
-    '<p>The requested URL ' +
+    '<p>The requested URL "' +
     escapeHtml(path) +
-    ' was not found on this server.</p>'
+    '" was not found on this server.</p>'
   );
   res.end();
   logger.info('404 Not Found: ' + path);

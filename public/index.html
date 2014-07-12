@@ -53,6 +53,11 @@
           $scope.urlIn = "";
         };
 
+        var emitSubmitSongData = function(songData) {
+          $socket.emit("submit", songData);
+          $scope.resetInputFields();
+        };
+
         $scope.submitSong = function() {
           var songData = {
             name: $scope.nameIn,
@@ -60,8 +65,24 @@
             genre: $scope.genreIn,
             url: $scope.urlIn
           };
-          $socket.emit("submit", songData);
-          $scope.resetInputFields();
+
+          if (songData.url.match("soundcloud")) {
+            var consumerKey = "89e7642d86f9241b0d1917ebfae99e38",
+                resolveURL =  "http://api.soundcloud.com/resolve?url=" + songData.url + "&format=json&consumer_key=" + consumerKey + "&callback=?";    
+            $.ajax({
+              url: resolveURL,
+              dataType: "json",
+              async: false,
+              success: function(track) {
+                var streamURL = (track.stream_url.indexOf("secret_token") == -1) ? track.stream_url + '?' : track.stream_url + '&';
+                streamURL = streamURL + 'consumer_key=' + consumerKey;
+                songData.url = streamURL;
+                emitSubmitSongData(songData);
+              }
+            });
+          } else {
+            emitSubmitSongData(songData);
+          }
         };
       });
 

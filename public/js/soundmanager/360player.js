@@ -388,6 +388,10 @@ function ThreeSixtyPlayer() {
     return e.target;
   };
 
+  var isPlayable = function(url) {
+    return true;
+  }
+
   this.handleClick = function(e) {
 
     // a sound link was clicked
@@ -413,7 +417,7 @@ function ThreeSixtyPlayer() {
 
     sURL = o.getAttribute('href');
 
-    if (!o.href || !sm.canPlayLink(o) || self.hasClass(o,self.excludeClass)) {
+    if (!o.href || !isPlayable(sURL) || self.hasClass(o,self.excludeClass)) {
       return true; // pass-thru for non-MP3/non-links
     }
 
@@ -1056,7 +1060,7 @@ function ThreeSixtyPlayer() {
     self.oUITemplateVis.innerHTML = self.getUIHTML(uiDataVis.circleDiameter).join('');
 
     for (i=0,j=oLinks.length; i<j; i++) {
-      if (sm.canPlayLink(oLinks[i]) && !self.hasClass(oLinks[i],self.excludeClass) && !self.hasClass(oLinks[i],self.css.sDefault)) {
+      if (isPlayable(oLinks[i].href) && !self.hasClass(oLinks[i],self.excludeClass) && !self.hasClass(oLinks[i],self.css.sDefault)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
