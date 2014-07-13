@@ -11,10 +11,12 @@
     <script src="/js/bower/angular-animate/angular-animate.min.js"></script>
     <script src="/js/bower/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="/js/soundmanager/soundmanager2.js"></script>
-    <script type="text/javascript" src="/js/soundmanager/berniecode-animator.js"></script>
-    <script type="text/javascript" src="/js/soundmanager/360player.js"></script>
-    <script type="text/javascript">
+    <script src="/js/soundmanager/soundmanager2.js"></script>
+    <script src="/js/soundmanager/berniecode-animator.js"></script>
+    <script src="/js/soundmanager/360player.js"></script>
+    <script src="/js/youtubemanager.js"></script>
+    <script src="/js/soundcloudmanager.js"></script>
+    <script>
       var fm = angular.module("freshmelodies", ['ngAnimate', 'infinite-scroll']);
 
       fm.factory('$socket', function ($rootScope) {
@@ -150,6 +152,7 @@
               <a href="{{ song.url }}"></a>
             </div>
           </div>
+          <div class="progress"></div>
         </div>
       </div>
       <div id="loading-spinner"></div>

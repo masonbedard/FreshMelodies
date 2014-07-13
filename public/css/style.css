@@ -28,12 +28,23 @@ body {
   margin:auto;
 }
 
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 50%;
+  background-color: black;
+  opacity: .2;
+}
+
 .entry {
     background-color:#E4E7EC;
     padding: 22px;
     font-size: 28px;
     color:#333;
     margin-top: 20px;
+    position: relative;
 }
 .fieldRight {
     float:right;

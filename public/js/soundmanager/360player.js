@@ -358,6 +358,8 @@ function ThreeSixtyPlayer() {
     whileplaying: function() {
       self.updatePlaying.apply(this);
       this._360data.fps++;
+      
+      $(".progress").css("width", this.position/this.duration*100 + "%");
     },
 
     bufferchange: function() {
