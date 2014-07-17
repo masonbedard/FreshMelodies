@@ -1,4 +1,7 @@
 node_modules
+bower_components
+
+public/js
 
 .DS_Store
 .AppleDouble
@@ -17,4 +20,3 @@ Icon
 
 # Logs
 logs/**
-public/js/bower/**

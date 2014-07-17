@@ -1,143 +1,14 @@
 <!DOCTYPE html>
 <html ng-app="freshmelodies">
   <head>
-    <title>Music</title>
+    <title>fresh melodies</title>
     <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/360player.css"/>
-    <link rel="stylesheet" href="css/360player-visualization.css"/>
-    <script src="/js/bower/jquery/dist/jquery.min.js"></script>
-    <script src="/js/classie.js"></script>
-    <script src="/js/bower/angular/angular.min.js"></script>
-    <script src="/js/bower/angular-animate/angular-animate.min.js"></script>
-    <script src="/js/bower/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/soundmanager/soundmanager2.js"></script>
-    <script src="/js/soundmanager/berniecode-animator.js"></script>
-    <script src="/js/soundmanager/360player.js"></script>
-    <script src="/js/youtubemanager.js"></script>
-    <script src="/js/soundcloudmanager.js"></script>
-    <script>
-      var fm = angular.module("freshmelodies", ['ngAnimate', 'infinite-scroll']);
-
-      fm.factory('$socket', function ($rootScope) {
-        var $socket = io.connect();
-        return {
-          on: function (eventName, callback, afterApplyCallback) {
-            $socket.on(eventName, function () {  
-              var args = arguments;
-              $rootScope.$apply(function () {
-                callback.apply($socket, args);
-              });
-              console.log(eventName)
-              if(typeof afterApplyCallback === 'function'){
-                afterApplyCallback.apply();
-              };
-            });
-          },
-          emit: function (eventName, data, callback) {
-            $socket.emit(eventName, data, function () {
-              var args = arguments;
-              $rootScope.$apply(function () {
-                if (callback) {
-                  callback.apply($socket, args);
-                }
-              });
-            });
-          }
-        };
-      });
-
-      fm.controller("SubmitCtrl", function($scope, $socket) {
-        $scope.resetInputFields = function() {
-          $scope.nameIn = "";
-          $scope.artistIn = "";
-          $scope.genreIn = "";
-          $scope.urlIn = "";
-        };
-
-        var emitSubmitSongData = function(songData) {
-          $socket.emit("submit", songData);
-          $scope.resetInputFields();
-        };
-
-        $scope.submitSong = function() {
-          var songData = {
-            name: $scope.nameIn,
-            artist: $scope.artistIn,
-            genre: $scope.genreIn,
-            url: $scope.urlIn
-          };
-
-          if (songData.url.match("soundcloud")) {
-            var consumerKey = "89e7642d86f9241b0d1917ebfae99e38",
-                resolveURL =  "http://api.soundcloud.com/resolve?url=" + songData.url + "&format=json&consumer_key=" + consumerKey + "&callback=?";    
-            $.ajax({
-              url: resolveURL,
-              dataType: "json",
-              async: false,
-              success: function(track) {
-                var streamURL = (track.stream_url.indexOf("secret_token") == -1) ? track.stream_url + '?' : track.stream_url + '&';
-                streamURL = streamURL + 'consumer_key=' + consumerKey;
-                songData.url = streamURL;
-                emitSubmitSongData(songData);
-              }
-            });
-          } else {
-            emitSubmitSongData(songData);
-          }
-        };
-      });
-
-      fm.controller("SongCtrl", function($scope, $socket) {
-        $scope.songs = [];
-        $scope.moreSongsAvailable = true;
-
-        $socket.on("songs", function(data) {
-          $scope.songs = data;
-
-          setTimeout(function() {
-            classie.removeClass(window.spinner, "loading-spinner-visible");
-            classie.removeClass(document.getElementById("songContainer"), "hidden");
-          }, 500);
-        }, threeSixtyPlayer.init);
-
-        $socket.on("newSong", function(data) {
-          $scope.songs.unshift(data);
-        }, threeSixtyPlayer.init);
-
-        $socket.on("deleteSong", function(data) {
-          for (var i = 0; i < $scope.songs.length; i++) {
-            if ($scope.songs[i]._id === data._id) {
-              $scope.songs.splice(i, 1);
-              break;
-            }
-          }
-        });
-
-        $socket.on("moreSongs", function(data) {
-          if (data.length > 0) {
-            $scope.songs = $scope.songs.concat(data);
-          } else {
-            $scope.moreSongsAvailable = false;
-          }
-          classie.removeClass(window.spinner, "loading-spinner-visible");
-        }, threeSixtyPlayer.init);
-
-        $scope.loadMoreSongs = function() {
-          if ($scope.moreSongsAvailable) {
-            var data = $scope.songs[$scope.songs.length-1];
-            $socket.emit("loadMoreSongs", data);
-            classie.addClass(window.spinner, "loading-spinner-visible");
-          }
-        };
-      });
-    </script>
   </head>
   <body>
     <div class="mainContainer" ng-controller="SongCtrl">
       <div id="title">fresh melodies</div>
       <div id="songContainer" infinite-scroll="loadMoreSongs()" infinite-scroll-distance="1" infinite-scroll-immediate-check='false'>
-        <div ng-repeat="song in songs" id="{{ song._id }}" class="entry">
+        <div ng-repeat="song in songs" id="{{ song._id }}" class="entry fmplayer" fmurl="{{ song.url }}">
           <div>
             <span class="fieldLeft">{{ song.name }}</span>
             <span class="fieldRight listen">listen</span>
@@ -148,8 +19,7 @@
           </div>
           <div>
             <span class="fieldLeft">{{ song.genre }}</span>
-            <div class="ui360 fieldRight">
-              <a href="{{ song.url }}"></a>
+            <div class="fieldRight">
             </div>
           </div>
           <div class="progress"></div>
@@ -190,7 +60,14 @@
       </div>
       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
     </nav>
-    <script src="/js/spin.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-animate.min.js"></script>
+    <script src="js/ng-infinite-scroll.min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="js/soundmanager2-jsmin.js"></script>
+    <script src="http://www.youtube.com/player_api"></script>
+    <script src="js/fm.js"></script>
     <script type="text/javascript">
       var opts = {lines: 13, length: 7, width: 3, radius: 8, corners: 1, rotate: 0, 
                   direction: 1, color: '#000', speed: 1, trail: 60, shadow: false, hwaccel: false, 
@@ -198,9 +75,8 @@
       window.spinner = document.getElementById('loading-spinner');
 
       new Spinner(opts).spin(window.spinner);
-      classie.addClass(window.spinner, "loading-spinner-visible");
-      classie.addClass(document.getElementById("songContainer"), "hidden");
+      $(window.spinner).addClass("loading-spinner-visible");
+      $("#songContainer").addClass("hidden");
     </script>
-    <script src="/js/borderMenu.js"></script>
   </body>
 </html>

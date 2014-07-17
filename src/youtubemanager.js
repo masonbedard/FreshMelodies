@@ -3,7 +3,11 @@
   2013 (c) Andrey Popp <8mayday@gmail.com>
 */
 
-var YoutubeSound, youtubeManager;
+(function(window, YT) {
+
+'use strict';
+
+var YoutubeSound, YoutubeManager, youtubeManager;
 
 YoutubeSound = (function() {
   var extractIdRe;
@@ -58,7 +62,7 @@ YoutubeSound = (function() {
         controls: '0',
         enablejsapi: '1',
         modestbranding: '1',
-        showinfo: '0',
+        showinfo: '0'
       }
     });
   }
@@ -209,11 +213,11 @@ YoutubeSound = (function() {
 
 })();
 
-youtubeManager = {
-  createSound: function(options) {
+YoutubeManager = function() {
+  this.createSound = function(options) {
     return new YoutubeSound(options);
-  },
-  setup: function(options) {
+  };
+  this.setup = function(options) {
     var oldCallback;
 
     if (options == null) {
@@ -230,22 +234,9 @@ youtubeManager = {
         return oldCallback();
       }
     };
-    this._injectScript();
     this._injectPlayerDiv();
-  },
-  _injectScript: function() {
-    var firstScriptTag, tag;
-
-    tag = document.createElement('script');
-    if (window.location.host === 'localhost') {
-      tag.src = 'http://www.youtube.com/player_api';
-    } else {
-      tag.src = '//www.youtube.com/player_api';
-    }
-    firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-  },
-  _injectPlayerDiv: function() {
+  };
+  this._injectPlayerDiv = function() {
     var playerDiv, body;
 
     playerDiv = document.createElement('div');
@@ -254,13 +245,19 @@ youtubeManager = {
 
     body = document.getElementsByTagName('body')[0];
     body.appendChild(playerDiv);
-  }
+  };
+
+  this.canPlayURL = function(url) {
+    return url.match('youtube');
+  };
 };
 
-if ((typeof define !== "undefined" && define !== null ? define.amd : void 0) != null) {
-  define(youtubeManager);
-}
+youtubeManager = new YoutubeManager();
+youtubeManager.setup();
 
-if ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null) {
-  module.exports = youtubeManager;
-}
+window.YoutubeManager = YoutubeManager;
+window.youtubeManager = youtubeManager;
+
+})(window, YT);
+
+

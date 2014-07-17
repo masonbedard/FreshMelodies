@@ -1,3 +1,7 @@
+(function(window, soundManager) {
+
+'use strict';
+
 var soundcloudManager = Object.create(soundManager);
 
 soundcloudManager.createSound = function(options) {
@@ -14,14 +18,23 @@ soundcloudManager.createSound = function(options) {
   sound = soundManager.createSound(options);
 
   resolveURL = 'http://api.soundcloud.com/resolve?url=' + url + '&format=json&consumer_key=' + consumer_key + '&callback=?';
-
+  console.log(url);
+  console.log(resolveURL);
   $.getJSON(resolveURL, function(data) {
     streamURL = data.stream_url;
-    streamURL = (streamURL.indexOf("secret_token") == -1) ? streamURL + '?' : streamURL + '&';
+    streamURL = (streamURL.indexOf("secret_token") === -1) ? streamURL + '?' : streamURL + '&';
     streamURL += 'consumer_key=' + consumer_key;
 
     sound.url = streamURL;
   });
 
   return sound;
-}
+};
+
+soundcloudManager.canPlayURL = function(url) {
+  return url.match('soundcloud');
+};
+
+window.soundcloudManager = soundcloudManager;
+
+})(window, soundManager);
